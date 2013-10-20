@@ -4,13 +4,27 @@
  */
 package paint.ui;
 
-import java.awt.Button;
+import java.awt.Color;
+import java.awt.Point;
+import java.util.LinkedList;
+import java.util.List;
+import paint.shape.LineBressenham;
+import paint.shape.MidpointCircle;
+import paint.shape.MidpointEllipse;
+import paint.shape.Shape2D;
 
 /**
  *
  * @author HaRy7x
  */
 public class MainWindow extends javax.swing.JFrame {
+
+	private boolean hasBeenSaved;
+
+	private Point startPoint;
+	private Point endPoint;
+
+	private List<Shape2D> drawedShapes = new LinkedList<Shape2D>();
 
 	/**
 	 * Creates new form MainWindow
@@ -46,6 +60,7 @@ public class MainWindow extends javax.swing.JFrame {
         lbStartPosition = new javax.swing.JLabel();
         lbEnd = new javax.swing.JLabel();
         lbEndPosition = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuNew = new javax.swing.JMenuItem();
@@ -55,8 +70,8 @@ public class MainWindow extends javax.swing.JFrame {
         menuHelp = new javax.swing.JMenu();
         menuAbout = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Paint");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Cemungudh Paint");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMaximumSize(new java.awt.Dimension(805, 505));
         setMinimumSize(new java.awt.Dimension(805, 505));
@@ -146,7 +161,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 151, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout sidePanelLayout = new javax.swing.GroupLayout(sidePanel);
@@ -165,7 +180,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(shapePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 165, Short.MAX_VALUE))
+                .addGap(0, 114, Short.MAX_VALUE))
         );
 
         mainPanel.add(sidePanel);
@@ -178,11 +193,11 @@ public class MainWindow extends javax.swing.JFrame {
         canvas.setMinimumSize(new java.awt.Dimension(689, 0));
         canvas.setPreferredSize(new java.awt.Dimension(689, 430));
         canvas.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                canvasMousePressed(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 canvasMouseReleased(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                canvasMousePressed(evt);
             }
         });
         canvas.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -239,6 +254,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         lbEndPosition.setText("-");
 
+        jLabel1.setText("Copyright by : Haryanto M.Rizal, Neng Mira Rahayu, Arvina Yulia");
+
         javax.swing.GroupLayout bottomPanelLayout = new javax.swing.GroupLayout(bottomPanel);
         bottomPanel.setLayout(bottomPanelLayout);
         bottomPanelLayout.setHorizontalGroup(
@@ -256,25 +273,33 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(lbEnd)
                 .addGap(0, 0, 0)
                 .addComponent(lbEndPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 438, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addContainerGap())
         );
         bottomPanelLayout.setVerticalGroup(
             bottomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bottomPanelLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addGroup(bottomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbCursor, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
+                    .addComponent(lbCursor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbCursorPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbStart)
                     .addComponent(lbStartPosition)
                     .addComponent(lbEnd)
-                    .addComponent(lbEndPosition)))
+                    .addComponent(lbEndPosition)
+                    .addComponent(jLabel1)))
         );
 
         menuFile.setText("File");
 
         menuNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         menuNew.setText("New");
+        menuNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuNewActionPerformed(evt);
+            }
+        });
         menuFile.add(menuNew);
 
         menuOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
@@ -287,6 +312,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
         menuExit.setText("Exit");
+        menuExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuExitActionPerformed(evt);
+            }
+        });
         menuFile.add(menuExit);
 
         menuBar.add(menuFile);
@@ -324,16 +354,54 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_canvasMouseMoved
 
     private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
+		startPoint = new Point(evt.getX(), evt.getY());
 		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
     }//GEN-LAST:event_canvasMousePressed
 
     private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
+		endPoint = new Point(evt.getX(), evt.getY());
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+
+//		Do nothing if no shape button selected
+		if (shapeButtonGroup.getSelection() == null) return;
+
+		int lineSize = 1;
+		Color shapeColor = Color.RED;
+
+		int borderSize = 1;
+		Color borderColor = Color.RED;
+
+		Shape2D newShape = null;
+
+		if (btnBressenham.isSelected()) {
+			newShape = new LineBressenham(startPoint, endPoint, lineSize, shapeColor);
+		} else if (btnLineDDA.isSelected()) {
+			newShape = new LineBressenham(startPoint, endPoint, lineSize, shapeColor);
+		} else if (btnMidpointCircle.isSelected()) {
+			newShape = new MidpointCircle(startPoint, endPoint, lineSize, shapeColor, borderSize, borderColor);
+		} else if (btnMidpointEllipse.isSelected()) {
+			newShape = new MidpointEllipse(startPoint, endPoint, lineSize, shapeColor, borderSize, borderColor);
+		} else if (btnRectangle.isSelected()) {
+		}
+
+		drawedShapes.add(newShape);
+		newShape.draw(canvas.getGraphics());
+
+		hasBeenSaved = false;
     }//GEN-LAST:event_canvasMouseReleased
 
     private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
 		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
     }//GEN-LAST:event_canvasMouseDragged
+
+    private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
+		canvas.update(canvas.getGraphics());
+    }//GEN-LAST:event_menuNewActionPerformed
+
+    private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
+        // TODO add your handling code here:
+		dispose();
+    }//GEN-LAST:event_menuExitActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -378,6 +446,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnRectangle;
     private javax.swing.JPanel canvas;
     private javax.swing.JPanel container;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JLabel lbCursor;
     private javax.swing.JLabel lbCursorPosition;

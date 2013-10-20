@@ -19,16 +19,34 @@ public abstract class Shape2D implements Drawable {
 	protected Point midpoint;
 	protected Point endpoint;
 
+	protected int lineSize = 1;
 	protected Color color = Color.BLACK;
 
 	public Shape2D(Point startpoint, Point endpoint) {
 		this.startpoint = startpoint;
 		this.endpoint = endpoint;
+		this.midpoint = calculateMidpoint(startpoint, endpoint);
+	}
+
+	public Shape2D(Point startpoint, Point endpoint, int lineSize) {
+		this.startpoint = startpoint;
+		this.endpoint = endpoint;
+		this.midpoint = calculateMidpoint(startpoint, endpoint);
+		this.lineSize = lineSize;
 	}
 
 	public Shape2D(Point startpoint, Point endpoint, Color color) {
 		this.startpoint = startpoint;
 		this.endpoint = endpoint;
+		this.midpoint = calculateMidpoint(startpoint, endpoint);
+		this.color = color;
+	}
+
+	public Shape2D(Point startpoint, Point endpoint, int lineSize, Color color) {
+		this.startpoint = startpoint;
+		this.endpoint = endpoint;
+		this.midpoint = calculateMidpoint(startpoint, endpoint);
+		this.lineSize = lineSize;
 		this.color = color;
 	}
 
@@ -37,7 +55,7 @@ public abstract class Shape2D implements Drawable {
 	}
 
 	public Point getMidpoint() {
-		return calculateMidpoint(startpoint, endpoint);
+		return midpoint;
 	}
 
 	public Point getEndpoint() {
@@ -52,17 +70,26 @@ public abstract class Shape2D implements Drawable {
 		this.color = color;
 	}
 
-	protected Point calculateMidpoint(Point startpoint, Point endpoint) {
+	protected final Point calculateMidpoint(Point startpoint, Point endpoint) {
 		return new Point((startpoint.x + endpoint.x)/2, (startpoint.y + endpoint.y)/2);
 	}
 
 	@Override
 	public void drawPixel(Graphics g, int x, int y) {
-		drawPixel(g, x, y, 1);
+		drawPixel(g, x, y, lineSize);
 	}
 
 	@Override
 	public void drawPixel(Graphics g, int x, int y, int size) {
+		drawPixel(g, x, y, size, this.color);
+	}
+	
+	@Override
+	public void drawPixel(Graphics g, int x, int y, int size, Color pixelColor) {
+		Color prevColor = g.getColor();
+		/* Applied shape color to the graphics */
+		g.setColor(pixelColor);
 		g.fillOval(x, y, size, size);
+		g.setColor(prevColor);
 	}
 }

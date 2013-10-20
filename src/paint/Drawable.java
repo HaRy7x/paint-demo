@@ -4,6 +4,7 @@
  */
 package paint;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 /**
@@ -14,6 +15,7 @@ public interface Drawable {
 
 	public void drawPixel(Graphics g, int x, int y);
 	public void drawPixel(Graphics g, int x, int y, int size);
+	public void drawPixel(Graphics g, int x, int y, int size, Color pixelColor);
 	public void draw(Graphics g);
 
 }

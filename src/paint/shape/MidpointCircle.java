@@ -18,6 +18,14 @@ public class MidpointCircle extends FilledShape2D {
 		super(startpoint, endpoint);
 	}
 
+	public MidpointCircle(Point startpoint, Point endpoint, int lineSize) {
+		super(startpoint, endpoint, lineSize);
+	}
+
+	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, int borderSize, Color borderColor) {
+		super(startpoint, endpoint, lineSize, borderSize, borderColor);
+	}
+
 	public MidpointCircle(Point startpoint, Point endpoint, Color color) {
 		super(startpoint, endpoint, color);
 	}
@@ -26,34 +34,48 @@ public class MidpointCircle extends FilledShape2D {
 		super(startpoint, endpoint, color, borderSize, borderColor);
 	}
 
-	public void drawPixelOnQuadran(Graphics g, int xc, int yc, int x, int y) {
-        drawPixel(g, xc + x, yc + y);
-        drawPixel(g, xc - x, yc + y);
-        drawPixel(g, xc + x, yc - y);
-        drawPixel(g, xc - x, yc - y);
-        drawPixel(g, xc + y, yc + x);
-        drawPixel(g, xc - y, yc + x);
-        drawPixel(g, xc + y, yc - x);
-        drawPixel(g, xc - y, yc - x);
+	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, Color color) {
+		super(startpoint, endpoint, lineSize, color);
+	}
+
+	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, Color color, int borderSize, Color borderColor) {
+		super(startpoint, endpoint, lineSize, color, borderSize, borderColor);
+	}
+
+	public void drawPixelOnQuadran(Graphics g, int Xc, int Yc, int X, int Y) {
+        drawPixel(g, Xc + X, Yc + Y);
+        drawPixel(g, Xc - X, Yc + Y);
+        drawPixel(g, Xc + X, Yc - Y);
+        drawPixel(g, Xc - X, Yc - Y);
+        drawPixel(g, Xc + Y, Yc + X);
+        drawPixel(g, Xc - Y, Yc + X);
+        drawPixel(g, Xc + Y, Yc - X);
+        drawPixel(g, Xc - Y, Yc - X);
     }
 
-	public void drawMidpointCircle(Graphics g, int xc, int yc, int r) {
-        int x = 0, y = r;
-        int P = 1 - r;
-        while (x < y) {
-            drawPixelOnQuadran(g, xc, yc, x, y);
-            x += 1;
+	public void drawMidpointCircle(Graphics g, int Xc, int Yc, int R) {
+        int X = 0, Y = R;
+        int P = 1 - R;
+
+		drawPixelOnQuadran(g, Xc, Yc, X, Y);
+		do {
+			X += 1;
             if (P < 0) {
-                P += 2 * x + 1;
+                P += 2 * X + 1;
             } else {
-                y -= 1;
-                P += 2 * (x - y) + 1;
+                Y -= 1;
+                P += 2 * (X - Y) + 1;
             }
-        }
+			drawPixelOnQuadran(g, Xc, Yc, X, Y);
+        } while (X < Y);
     }
 
 	@Override
 	public void draw(Graphics g) {
-		drawMidpointCircle(g, midpoint.x, midpoint.y, borderSize);
+		// jari-jari adalah jarak startpoint ke midpoint
+		int R = (int) startpoint.distance(midpoint);
+
+		if (R == 0) drawPixel(g, midpoint.x, midpoint.y);
+		else drawMidpointCircle(g, midpoint.x, midpoint.y, R);
 	}
 }
