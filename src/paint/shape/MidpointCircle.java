@@ -42,7 +42,7 @@ public class MidpointCircle extends FilledShape2D {
 		super(startpoint, endpoint, lineSize, color, borderSize, borderColor);
 	}
 
-	public void drawPixelOnQuadran(Graphics g, int Xc, int Yc, int X, int Y) {
+	public void drawPixelOnOktan(Graphics g, int Xc, int Yc, int X, int Y) {
         drawPixel(g, Xc + X, Yc + Y);
         drawPixel(g, Xc - X, Yc + Y);
         drawPixel(g, Xc + X, Yc - Y);
@@ -57,7 +57,7 @@ public class MidpointCircle extends FilledShape2D {
         int X = 0, Y = R;
         int P = 1 - R;
 
-		drawPixelOnQuadran(g, Xc, Yc, X, Y);
+		drawPixelOnOktan(g, Xc, Yc, X, Y);
 		do {
 			X += 1;
             if (P < 0) {
@@ -66,7 +66,7 @@ public class MidpointCircle extends FilledShape2D {
                 Y -= 1;
                 P += 2 * (X - Y) + 1;
             }
-			drawPixelOnQuadran(g, Xc, Yc, X, Y);
+			drawPixelOnOktan(g, Xc, Yc, X, Y);
         } while (X < Y);
     }
 
