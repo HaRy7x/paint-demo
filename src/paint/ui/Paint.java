@@ -84,9 +84,7 @@ public class Paint extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cemungudh Paint");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setMaximumSize(new java.awt.Dimension(805, 505));
         setMinimumSize(new java.awt.Dimension(805, 505));
-        setPreferredSize(new java.awt.Dimension(805, 505));
         setResizable(false);
 
         mainPanel.setPreferredSize(new java.awt.Dimension(800, 450));
@@ -331,18 +329,7 @@ public class Paint extends javax.swing.JFrame {
                 canvasMouseDragged(evt);
             }
         });
-
-        javax.swing.GroupLayout canvasLayout = new javax.swing.GroupLayout(canvas);
-        canvas.setLayout(canvasLayout);
-        canvasLayout.setHorizontalGroup(
-            canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 685, Short.MAX_VALUE)
-        );
-        canvasLayout.setVerticalGroup(
-            canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 427, Short.MAX_VALUE)
-        );
-
+        canvas.setLayout(new javax.swing.BoxLayout(canvas, javax.swing.BoxLayout.LINE_AXIS));
         mainPanel.add(canvas);
 
         javax.swing.GroupLayout containerLayout = new javax.swing.GroupLayout(container);
@@ -396,7 +383,7 @@ public class Paint extends javax.swing.JFrame {
                 .addComponent(lbEnd)
                 .addGap(0, 0, 0)
                 .addComponent(lbEndPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addContainerGap())
         );
@@ -485,18 +472,19 @@ public class Paint extends javax.swing.JFrame {
 		endPoint = new Point(evt.getX(), evt.getY());
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
 
-		BufferedImage image = (BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight());
-//		BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
+		// Cara 1 - Copy Imaage dari Canvas
+		BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
 		canvas.paint(g);
+		
+		// Cara 2 - Copy Image dari Canvas
+//		BufferedImage image, temp = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
+//		Graphics2D g = temp.createGraphics();
+//		g.drawImage((BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight()), null, 0, 0);
+//		image = temp;
+//		canvas.paint(g);
 
-//		int[] color = image.getRaster().getPixel(evt.getX(), evt.getY(), new int[3]);
-//		Color col = new Color(color[0], color[1], color[2]);
-//		System.out.println("R="+col.getRed()+", G="+col.getGreen()+", B="+col.getBlue());
 		int rgb = image.getRGB(evt.getX(), evt.getY());
-//		red.setText(  String.valueOf((rgb >> 16) & 0xff));
-//		green.setText(String.valueOf((rgb >>  8) & 0xff));    
-//		blue.setText( String.valueOf( rgb        & 0xff));
 		System.out.println("R=" + String.valueOf((rgb >> 16) & 0xff) + ", G=" + String.valueOf((rgb >> 8) & 0xff) + ", B=" + String.valueOf(rgb & 0xff));
 
 //		Do nothing if no shape button selected
@@ -505,21 +493,19 @@ public class Paint extends javax.swing.JFrame {
 		}
 
 		int lineSize = pixelSlider.getValue();
-		Color shapeColor = panelColor1.getBackground();
-
-		int borderSize = 1;
-		Color borderColor = panelColor2.getBackground();
+		Color lineColor = panelColor1.getBackground();
+		Color fillColor = panelColor2.getBackground();
 
 		Shape2D newShape = null;
 
 		if (btnBressenham.isSelected()) {
-			newShape = new LineBressenham(startPoint, endPoint, lineSize, shapeColor);
+			newShape = new LineBressenham(startPoint, endPoint, lineSize, lineColor);
 		} else if (btnLineDDA.isSelected()) {
-			newShape = new LineBressenham(startPoint, endPoint, lineSize, shapeColor);
+			newShape = new LineBressenham(startPoint, endPoint, lineSize, lineColor);
 		} else if (btnMidpointCircle.isSelected()) {
-			newShape = new MidpointCircle(startPoint, endPoint, lineSize, shapeColor, borderSize, borderColor);
+			newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
 		} else if (btnMidpointEllipse.isSelected()) {
-			newShape = new MidpointEllipse(startPoint, endPoint, lineSize, shapeColor, borderSize, borderColor);
+			newShape = new MidpointEllipse(startPoint, endPoint, fillColor, lineSize, lineColor);
 		} else if (btnRectangle.isSelected()) {
 		}
 
@@ -531,7 +517,7 @@ public class Paint extends javax.swing.JFrame {
 
 //		canvas.updateUI();
 //		canvas.paintComponents(canvas.getGraphics());
-		canvas.repaint();
+//		canvas.repaint();
 		hasBeenSaved = false;
     }//GEN-LAST:event_canvasMouseReleased
 
@@ -552,14 +538,14 @@ public class Paint extends javax.swing.JFrame {
 		Color color = JColorChooser.showDialog(this, "Choose Color 1", panelColor1.getBackground());
 		if (color == null) return;
 		panelColor1.setBackground(color);
-		panelColor1.setToolTipText("RGBA={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "," + color.getAlpha() + "}");
+		panelColor1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
     }//GEN-LAST:event_panelColor1MouseClicked
 
     private void panelColor2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelColor2MouseClicked
 		Color color = JColorChooser.showDialog(this, "Choose Color 2", panelColor2.getBackground());
 		if (color == null) return;
 		panelColor2.setBackground(color);
-		panelColor2.setToolTipText("RGBA={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "," + color.getAlpha() + "}");
+		panelColor2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
     }//GEN-LAST:event_panelColor2MouseClicked
 
 	/**
@@ -609,50 +595,41 @@ public class Paint extends javax.swing.JFrame {
 			addMouseListener(new java.awt.event.MouseAdapter() {
 				public void mouseReleased(java.awt.event.MouseEvent evt) {
 					canvasMouseReleased(evt);
-					repaint();
+//					repaint();
 				}
 
 				public void mousePressed(java.awt.event.MouseEvent evt) {
 					canvasMousePressed(evt);
-					repaint();
+//					repaint();
 				}
 			});
 			addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
 				public void mouseMoved(java.awt.event.MouseEvent evt) {
 					canvasMouseMoved(evt);
-					repaint();
+//					repaint();
 				}
 
 				public void mouseDragged(java.awt.event.MouseEvent evt) {
 					canvasMouseDragged(evt);
-					repaint();
+//					repaint();
 				}
 			});
 		}
 
-//		@Override
-//		public void paint(Graphics g) {
-//			super.paint(g);
-//			for (Shape2D shape : drawedShapes) {
-//				shape.draw(this);
-//			}
-//		}
-
 		@Override
-		protected void paintComponent(Graphics g) {
+		protected void paintChildren(Graphics g) {
 			System.out.println("Paint Component");
 			super.paintComponent(g);
-			Graphics2D g2 = (Graphics2D) g;
 			for (Shape2D shape : drawedShapes) {
-				shape.draw(g2);
+				shape.draw(g);
 			}
-			
-//			paint(g);
 		}
 
 		public void addShape(Shape2D shape) {
 			drawedShapes.add(shape);
-//			paintComponent(this.getGraphics());
+//			Graphics g = ((BufferedImage)this.createImage(this.getWidth(), this.getHeight())).createGraphics();
+//			paintComponent(g);
+//			g.dispose();
 		}
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables

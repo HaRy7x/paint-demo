@@ -18,28 +18,16 @@ public class MidpointCircle extends FilledShape2D {
 		super(startpoint, endpoint);
 	}
 
-	public MidpointCircle(Point startpoint, Point endpoint, int lineSize) {
-		super(startpoint, endpoint, lineSize);
-	}
-
-	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, int borderSize, Color borderColor) {
-		super(startpoint, endpoint, lineSize, borderSize, borderColor);
-	}
-
 	public MidpointCircle(Point startpoint, Point endpoint, Color color) {
 		super(startpoint, endpoint, color);
 	}
 
+	public MidpointCircle(Point startpoint, Point endpoint, Color color, int borderSize) {
+		super(startpoint, endpoint, color, borderSize);
+	}
+
 	public MidpointCircle(Point startpoint, Point endpoint, Color color, int borderSize, Color borderColor) {
 		super(startpoint, endpoint, color, borderSize, borderColor);
-	}
-
-	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, Color color) {
-		super(startpoint, endpoint, lineSize, color);
-	}
-
-	public MidpointCircle(Point startpoint, Point endpoint, int lineSize, Color color, int borderSize, Color borderColor) {
-		super(startpoint, endpoint, lineSize, color, borderSize, borderColor);
 	}
 
 	public void drawPixelOnOktan(Graphics g, int Xc, int Yc, int X, int Y) {

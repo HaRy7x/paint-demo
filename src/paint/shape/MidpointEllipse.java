@@ -18,28 +18,16 @@ public class MidpointEllipse extends FilledShape2D {
 		super(startpoint, endpoint);
 	}
 
-	public MidpointEllipse(Point startpoint, Point endpoint, int lineSize) {
-		super(startpoint, endpoint, lineSize);
-	}
-
-	public MidpointEllipse(Point startpoint, Point endpoint, int lineSize, int borderSize, Color borderColor) {
-		super(startpoint, endpoint, lineSize, borderSize, borderColor);
-	}
-
 	public MidpointEllipse(Point startpoint, Point endpoint, Color color) {
 		super(startpoint, endpoint, color);
 	}
 
+	public MidpointEllipse(Point startpoint, Point endpoint, Color color, int borderSize) {
+		super(startpoint, endpoint, color, borderSize);
+	}
+
 	public MidpointEllipse(Point startpoint, Point endpoint, Color color, int borderSize, Color borderColor) {
 		super(startpoint, endpoint, color, borderSize, borderColor);
-	}
-
-	public MidpointEllipse(Point startpoint, Point endpoint, int lineSize, Color color) {
-		super(startpoint, endpoint, lineSize, color);
-	}
-
-	public MidpointEllipse(Point startpoint, Point endpoint, int lineSize, Color color, int borderSize, Color borderColor) {
-		super(startpoint, endpoint, lineSize, color, borderSize, borderColor);
 	}
 
 	public void drawPixelOnQuadran(Graphics g, int Xc, int Yc, int Rx, int Ry) {

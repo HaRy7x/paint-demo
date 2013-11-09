@@ -20,7 +20,7 @@ public abstract class Shape2D implements Drawable {
 	protected Point endpoint;
 
 	protected int lineSize = 1;
-	protected Color color = Color.BLACK;
+	protected Color lineColor = Color.BLACK;
 
 	public Shape2D(Point startpoint, Point endpoint) {
 		this.startpoint = startpoint;
@@ -35,19 +35,19 @@ public abstract class Shape2D implements Drawable {
 		this.lineSize = lineSize;
 	}
 
-	public Shape2D(Point startpoint, Point endpoint, Color color) {
+	public Shape2D(Point startpoint, Point endpoint, Color lineColor) {
 		this.startpoint = startpoint;
 		this.endpoint = endpoint;
 		this.midpoint = calculateMidpoint(startpoint, endpoint);
-		this.color = color;
+		this.lineColor = lineColor;
 	}
 
-	public Shape2D(Point startpoint, Point endpoint, int lineSize, Color color) {
+	public Shape2D(Point startpoint, Point endpoint, int lineSize, Color lineColor) {
 		this.startpoint = startpoint;
 		this.endpoint = endpoint;
 		this.midpoint = calculateMidpoint(startpoint, endpoint);
 		this.lineSize = lineSize;
-		this.color = color;
+		this.lineColor = lineColor;
 	}
 
 	public Point getStartpoint() {
@@ -62,16 +62,16 @@ public abstract class Shape2D implements Drawable {
 		return endpoint;
 	}
 
-	public Color getColor() {
-		return color;
+	public Color getLineColor() {
+		return lineColor;
 	}
 
-	public void setColor(Color color) {
-		this.color = color;
+	public void setLineColor(Color lineColor) {
+		this.lineColor = lineColor;
 	}
 
 	protected final Point calculateMidpoint(Point startpoint, Point endpoint) {
-		return new Point((startpoint.x + endpoint.x)/2, (startpoint.y + endpoint.y)/2);
+		return new Point((startpoint.x + endpoint.x) / 2, (startpoint.y + endpoint.y) / 2);
 	}
 
 	@Override
@@ -81,15 +81,13 @@ public abstract class Shape2D implements Drawable {
 
 	@Override
 	public void drawPixel(Graphics g, int x, int y, int size) {
-		drawPixel(g, x, y, size, this.color);
+		drawPixel(g, x, y, size, this.lineColor);
 	}
-	
+
 	@Override
 	public void drawPixel(Graphics g, int x, int y, int size, Color pixelColor) {
-		Color prevColor = g.getColor();
-		/* Applied shape color to the graphics */
+		int offset = size / 2;
 		g.setColor(pixelColor);
-		g.fillOval(x, y, size, size);
-		g.setColor(prevColor);
+		g.fillOval(x - offset, y - offset, size, size);
 	}
 }
