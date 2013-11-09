@@ -1,2 +1,3 @@
 /src/paint/ui/NewClass.java
 /dist/
+!/src/paint/ui/test/STDrawingArea.java
