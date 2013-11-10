@@ -5,16 +5,12 @@
 package paint.ui;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-import java.util.List;
 import javax.swing.JColorChooser;
-import paint.shape.LineBressenham;
-import paint.shape.MidpointCircle;
-import paint.shape.MidpointEllipse;
-import paint.shape.Shape2D;
+import paint.tool.CircleTool;
+import paint.tool.EllipseTool;
+import paint.tool.LineBressenhamTool;
+import paint.tool.LineDDATool;
+import paint.tool.Tool;
 
 /**
  *
@@ -23,10 +19,7 @@ import paint.shape.Shape2D;
 public class Paint extends javax.swing.JFrame {
 
 	private boolean hasBeenSaved;
-	private Point startPoint;
-	private Point endPoint;
-
-	BufferedImage backupImage, currentImage;
+	Tool selectedTool;
 
 	/**
 	 * Creates new form Paint
@@ -62,6 +55,7 @@ public class Paint extends javax.swing.JFrame {
         color2Wrapper = new javax.swing.JPanel();
         color2 = new javax.swing.JPanel();
         lblColor2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         canvas = new paint.ui.Canvas();
         bottomPane = new javax.swing.JPanel();
         lbCursor = new javax.swing.JLabel();
@@ -124,6 +118,11 @@ public class Paint extends javax.swing.JFrame {
         btnLineDDA.setMinimumSize(new java.awt.Dimension(30, 30));
         btnLineDDA.setPreferredSize(new java.awt.Dimension(30, 30));
         btnLineDDA.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnLineDDA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLineDDAActionPerformed(evt);
+            }
+        });
         shapePane.add(btnLineDDA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 30, 30));
 
         shapeButtonGroup.add(btnBressenham);
@@ -137,6 +136,11 @@ public class Paint extends javax.swing.JFrame {
         btnBressenham.setMinimumSize(new java.awt.Dimension(25, 25));
         btnBressenham.setPreferredSize(new java.awt.Dimension(26, 26));
         btnBressenham.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnBressenham.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBressenhamActionPerformed(evt);
+            }
+        });
         shapePane.add(btnBressenham, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 30, 30));
 
         shapeButtonGroup.add(btnMidpointCircle);
@@ -150,6 +154,11 @@ public class Paint extends javax.swing.JFrame {
         btnMidpointCircle.setMinimumSize(new java.awt.Dimension(30, 30));
         btnMidpointCircle.setPreferredSize(new java.awt.Dimension(30, 30));
         btnMidpointCircle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnMidpointCircle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMidpointCircleActionPerformed(evt);
+            }
+        });
         shapePane.add(btnMidpointCircle, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 30, 30));
 
         shapeButtonGroup.add(btnMidpointEllipse);
@@ -161,6 +170,11 @@ public class Paint extends javax.swing.JFrame {
         btnMidpointEllipse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnMidpointEllipse.setPreferredSize(new java.awt.Dimension(26, 26));
         btnMidpointEllipse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnMidpointEllipse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMidpointEllipseActionPerformed(evt);
+            }
+        });
         shapePane.add(btnMidpointEllipse, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 30, 30));
 
         shapeButtonGroup.add(btnRectangle);
@@ -219,8 +233,8 @@ public class Paint extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 color1MouseEntered(evt);
             }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                color1MouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                color1MousePressed(evt);
             }
         });
 
@@ -265,8 +279,8 @@ public class Paint extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 color2MouseEntered(evt);
             }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                color2MouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                color2MousePressed(evt);
             }
         });
 
@@ -321,6 +335,17 @@ public class Paint extends javax.swing.JFrame {
             .addComponent(color2Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 110, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
         sidePane.setLayout(sidePaneLayout);
         sidePaneLayout.setHorizontalGroup(
@@ -331,6 +356,7 @@ public class Paint extends javax.swing.JFrame {
                     .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         sidePaneLayout.setVerticalGroup(
             sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -341,6 +367,8 @@ public class Paint extends javax.swing.JFrame {
                 .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -501,57 +529,9 @@ public class Paint extends javax.swing.JFrame {
 		dispose();
     }//GEN-LAST:event_menuExitActionPerformed
 
-    private void color1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MouseClicked
-		Color color = JColorChooser.showDialog(this, "Choose Color 1", color1.getBackground());
-		if (color == null) {
-			return;
-		}
-		color1.setBackground(color);
-		color1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
-    }//GEN-LAST:event_color1MouseClicked
-
-    private void color2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color2MouseClicked
-		Color color = JColorChooser.showDialog(this, "Choose Color 2", color2.getBackground());
-		if (color == null) {
-			return;
-		}
-		color2.setBackground(color);
-		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
-    }//GEN-LAST:event_color2MouseClicked
-
     private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
-		endPoint = new Point(evt.getX(), evt.getY());
 		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-
-		System.out.println("Dragged");
-
-		((Canvas) canvas).testG.drawImage(backupImage, 0, 0, null);
-
-		if (shapeButtonGroup.getSelection() == null) {
-			return;
-		}
-
-		int lineSize = pixelSlider.getValue();
-		Color lineColor = color1.getBackground();
-		Color fillColor = color2.getBackground();
-
-		Shape2D newShape = null;
-
-		if (btnBressenham.isSelected()) {
-			newShape = new LineBressenham(startPoint, endPoint, lineSize, lineColor);
-		} else if (btnLineDDA.isSelected()) {
-			newShape = new LineBressenham(startPoint, endPoint, lineSize, lineColor);
-		} else if (btnMidpointCircle.isSelected()) {
-			newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
-		} else if (btnMidpointEllipse.isSelected()) {
-			newShape = new MidpointEllipse(startPoint, endPoint, fillColor, lineSize, lineColor);
-		} else if (btnRectangle.isSelected()) {
-			return;
-		}
-
-		newShape.draw(((Canvas) canvas).testG);
-
-		canvas.repaint();
+		selectedTool.actionMouseDragged(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseDragged
 
     private void canvasMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseMoved
@@ -559,33 +539,14 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_canvasMouseMoved
 
     private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
-		System.out.println("Release");
-
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-
-		((Canvas) canvas).setMainImage(currentImage);
-
-		BufferedImage image = ((Canvas) canvas).getMainImage();
-		int rgb = image.getRGB(evt.getX(), evt.getY());
-		System.out.println("R=" + String.valueOf((rgb >> 16) & 0xff) + ", G=" + String.valueOf((rgb >> 8) & 0xff) + ", B=" + String.valueOf(rgb & 0xff));
-
-		currentImage.flush();
-		backupImage.flush();
+		selectedTool.actionMouseReleased(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseReleased
 
     private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
-		startPoint = new Point(evt.getX(), evt.getY());
 		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		endPoint = new Point(evt.getX(), evt.getY());
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-
-		backupImage = ((Canvas) canvas).getMainImageCopy();
-		currentImage = ((Canvas) canvas).getMainImageCopy();
-
-		((Canvas) canvas).testG = currentImage.createGraphics();
-		((Canvas) canvas).setMainImage(currentImage);
-
-		hasBeenSaved = false;
+		selectedTool.actionMouseClicked(evt, getCanvas());
     }//GEN-LAST:event_canvasMousePressed
 
     private void pixelSliderMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelSliderMouseWheelMoved
@@ -595,9 +556,9 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_pixelSliderMouseWheelMoved
 
     private void pixelPaneMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelPaneMouseWheelMoved
-        int newVal = pixelSlider.getValue() - evt.getUnitsToScroll();
-        pixelSlider.setValue(newVal);
-        pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
+		int newVal = pixelSlider.getValue() - evt.getUnitsToScroll();
+		pixelSlider.setValue(newVal);
+		pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
     }//GEN-LAST:event_pixelPaneMouseWheelMoved
 
     private void color1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MouseEntered
@@ -617,6 +578,36 @@ public class Paint extends javax.swing.JFrame {
     private void pixelSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pixelSliderMouseDragged
 		pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
     }//GEN-LAST:event_pixelSliderMouseDragged
+
+    private void btnMidpointEllipseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMidpointEllipseActionPerformed
+		if (!(selectedTool instanceof EllipseTool)) selectedTool = new EllipseTool(this);
+    }//GEN-LAST:event_btnMidpointEllipseActionPerformed
+
+    private void btnMidpointCircleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMidpointCircleActionPerformed
+		if (!(selectedTool instanceof CircleTool)) selectedTool = new CircleTool(this);
+    }//GEN-LAST:event_btnMidpointCircleActionPerformed
+
+    private void btnLineDDAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLineDDAActionPerformed
+		if (!(selectedTool instanceof LineDDATool)) selectedTool = new LineDDATool(this);
+    }//GEN-LAST:event_btnLineDDAActionPerformed
+
+    private void btnBressenhamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBressenhamActionPerformed
+		if (!(selectedTool instanceof LineBressenhamTool)) selectedTool = new LineBressenhamTool(this);
+    }//GEN-LAST:event_btnBressenhamActionPerformed
+
+    private void color1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MousePressed
+		Color color = JColorChooser.showDialog(this, "Choose Color 1", color1.getBackground());
+		if (color == null) return;
+		color1.setBackground(color);
+		color1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color1MousePressed
+
+    private void color2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color2MousePressed
+		Color color = JColorChooser.showDialog(this, "Choose Color 2", color2.getBackground());
+		if (color == null) return;
+		color2.setBackground(color);
+		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color2MousePressed
 
 	/**
 	 * @param args the command line arguments
@@ -653,19 +644,20 @@ public class Paint extends javax.swing.JFrame {
 		});
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel bottomPane;
+    public javax.swing.JPanel bottomPane;
     private javax.swing.JToggleButton btnBressenham;
     private javax.swing.JToggleButton btnLineDDA;
     private javax.swing.JToggleButton btnMidpointCircle;
     private javax.swing.JToggleButton btnMidpointEllipse;
     private javax.swing.JToggleButton btnRectangle;
-    private javax.swing.JPanel canvas;
-    private javax.swing.JPanel color1;
+    public javax.swing.JPanel canvas;
+    public javax.swing.JPanel color1;
     private javax.swing.JPanel color1Wrapper;
-    private javax.swing.JPanel color2;
+    public javax.swing.JPanel color2;
     private javax.swing.JPanel color2Wrapper;
     private javax.swing.JPanel colorPane;
     private javax.swing.JPanel containerPane;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lbCopyright;
     private javax.swing.JLabel lbCursor;
     private javax.swing.JLabel lbCursorPosition;
@@ -685,7 +677,7 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JPanel pixelPane;
-    private javax.swing.JSlider pixelSlider;
+    public javax.swing.JSlider pixelSlider;
     private javax.swing.ButtonGroup shapeButtonGroup;
     private javax.swing.JPanel shapePane;
     private javax.swing.JPanel sidePane;

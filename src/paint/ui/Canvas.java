@@ -15,8 +15,8 @@ import java.awt.image.BufferedImage;
  */
 public class Canvas extends javax.swing.JPanel {
 
-	BufferedImage mainImage;
-	Graphics testG;
+	private BufferedImage mainImage;
+	private Graphics mainGraphics;
 
 	/**
 	 * Creates new form Canvas
@@ -29,9 +29,9 @@ public class Canvas extends javax.swing.JPanel {
 	private void setup() {
 		setSize(getPreferredSize());
 		mainImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		testG = mainImage.createGraphics();
-		testG.setColor(Color.white);
-		testG.fillRect(0, 0, getWidth(), getHeight());
+		mainGraphics = mainImage.createGraphics();
+		mainGraphics.setColor(Color.white);
+		mainGraphics.fillRect(0, 0, getWidth(), getHeight());
 	}
 
 	@Override
@@ -62,6 +62,14 @@ public class Canvas extends javax.swing.JPanel {
 		Graphics2D g2d = temp.createGraphics();
 		g2d.drawImage(image, null, 0, 0);
 		return temp;
+	}
+
+	public void setMainGraphics(Graphics g) {
+		this.mainGraphics = g;
+	}
+
+	public Graphics getMainGraphics() {
+		return this.mainGraphics;
 	}
 
 	/**
