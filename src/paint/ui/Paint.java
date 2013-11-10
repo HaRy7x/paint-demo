@@ -6,13 +6,11 @@ package paint.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JColorChooser;
-import javax.swing.JPanel;
 import paint.shape.LineBressenham;
 import paint.shape.MidpointCircle;
 import paint.shape.MidpointEllipse;
@@ -27,7 +25,8 @@ public class Paint extends javax.swing.JFrame {
 	private boolean hasBeenSaved;
 	private Point startPoint;
 	private Point endPoint;
-	private List<Shape2D> drawedShapes = new LinkedList<Shape2D>();
+
+	BufferedImage backupImage, currentImage;
 
 	/**
 	 * Creates new form Paint
@@ -45,33 +44,33 @@ public class Paint extends javax.swing.JFrame {
     private void initComponents() {
 
         shapeButtonGroup = new javax.swing.ButtonGroup();
-        container = new javax.swing.JPanel();
-        mainPanel = new javax.swing.JPanel();
-        sidePanel = new javax.swing.JPanel();
-        shapePanel = new javax.swing.JPanel();
+        containerPane = new javax.swing.JPanel();
+        mainPane = new javax.swing.JPanel();
+        sidePane = new javax.swing.JPanel();
+        shapePane = new javax.swing.JPanel();
         btnLineDDA = new javax.swing.JToggleButton();
         btnBressenham = new javax.swing.JToggleButton();
         btnMidpointCircle = new javax.swing.JToggleButton();
         btnMidpointEllipse = new javax.swing.JToggleButton();
         btnRectangle = new javax.swing.JToggleButton();
-        panelColor = new javax.swing.JPanel();
-        color2Wrapper = new javax.swing.JPanel();
-        panelColor2 = new javax.swing.JPanel();
-        lblColor2 = new javax.swing.JLabel();
-        color1Wrapper = new javax.swing.JPanel();
-        panelColor1 = new javax.swing.JPanel();
-        lblColor1 = new javax.swing.JLabel();
-        panelPixel = new javax.swing.JPanel();
+        pixelPane = new javax.swing.JPanel();
         pixelSlider = new javax.swing.JSlider();
-        canvas = new Paint.Canvas();
-        bottomPanel = new javax.swing.JPanel();
+        colorPane = new javax.swing.JPanel();
+        color1Wrapper = new javax.swing.JPanel();
+        color1 = new javax.swing.JPanel();
+        lblColor1 = new javax.swing.JLabel();
+        color2Wrapper = new javax.swing.JPanel();
+        color2 = new javax.swing.JPanel();
+        lblColor2 = new javax.swing.JLabel();
+        canvas = new paint.ui.Canvas();
+        bottomPane = new javax.swing.JPanel();
         lbCursor = new javax.swing.JLabel();
         lbCursorPosition = new javax.swing.JLabel();
         lbStart = new javax.swing.JLabel();
         lbStartPosition = new javax.swing.JLabel();
         lbEnd = new javax.swing.JLabel();
         lbEndPosition = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        lbCopyright = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuNew = new javax.swing.JMenuItem();
@@ -85,21 +84,34 @@ public class Paint extends javax.swing.JFrame {
         setTitle("Cemungudh Paint");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(805, 505));
+        setName("PaintFrame"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(805, 470));
         setResizable(false);
+        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.X_AXIS));
 
-        mainPanel.setPreferredSize(new java.awt.Dimension(800, 450));
-        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.LINE_AXIS));
+        containerPane.setMinimumSize(new java.awt.Dimension(810, 500));
+        containerPane.setPreferredSize(new java.awt.Dimension(810, 500));
+        containerPane.setLayout(new javax.swing.BoxLayout(containerPane, javax.swing.BoxLayout.PAGE_AXIS));
 
-        sidePanel.setMaximumSize(new java.awt.Dimension(110, 32767));
-        sidePanel.setMinimumSize(new java.awt.Dimension(110, 100));
+        mainPane.setFocusable(false);
+        mainPane.setMinimumSize(new java.awt.Dimension(801, 450));
+        mainPane.setPreferredSize(new java.awt.Dimension(800, 450));
+        mainPane.setLayout(new javax.swing.BoxLayout(mainPane, javax.swing.BoxLayout.X_AXIS));
 
-        shapePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Shapes", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
-        shapePanel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        shapePanel.setFocusable(false);
-        shapePanel.setMaximumSize(new java.awt.Dimension(110, 160));
-        shapePanel.setMinimumSize(new java.awt.Dimension(110, 160));
-        shapePanel.setPreferredSize(new java.awt.Dimension(110, 160));
-        shapePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        sidePane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        sidePane.setMaximumSize(new java.awt.Dimension(112, 1500));
+        sidePane.setMinimumSize(new java.awt.Dimension(112, 1000));
+        sidePane.setPreferredSize(new java.awt.Dimension(112, 1000));
+
+        shapePane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Shapes", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
+        shapePane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        shapePane.setDoubleBuffered(false);
+        shapePane.setFocusable(false);
+        shapePane.setMaximumSize(new java.awt.Dimension(2000, 212));
+        shapePane.setMinimumSize(new java.awt.Dimension(2000, 212));
+        shapePane.setName(""); // NOI18N
+        shapePane.setPreferredSize(new java.awt.Dimension(2000, 212));
+        shapePane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         shapeButtonGroup.add(btnLineDDA);
         btnLineDDA.setText("Line");
@@ -112,7 +124,7 @@ public class Paint extends javax.swing.JFrame {
         btnLineDDA.setMinimumSize(new java.awt.Dimension(30, 30));
         btnLineDDA.setPreferredSize(new java.awt.Dimension(30, 30));
         btnLineDDA.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePanel.add(btnLineDDA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 30, 30));
+        shapePane.add(btnLineDDA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 30, 30));
 
         shapeButtonGroup.add(btnBressenham);
         btnBressenham.setText("Line");
@@ -125,7 +137,7 @@ public class Paint extends javax.swing.JFrame {
         btnBressenham.setMinimumSize(new java.awt.Dimension(25, 25));
         btnBressenham.setPreferredSize(new java.awt.Dimension(26, 26));
         btnBressenham.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePanel.add(btnBressenham, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 30, 30));
+        shapePane.add(btnBressenham, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 30, 30));
 
         shapeButtonGroup.add(btnMidpointCircle);
         btnMidpointCircle.setText("Circle");
@@ -138,7 +150,7 @@ public class Paint extends javax.swing.JFrame {
         btnMidpointCircle.setMinimumSize(new java.awt.Dimension(30, 30));
         btnMidpointCircle.setPreferredSize(new java.awt.Dimension(30, 30));
         btnMidpointCircle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePanel.add(btnMidpointCircle, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 30, 30));
+        shapePane.add(btnMidpointCircle, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 30, 30));
 
         shapeButtonGroup.add(btnMidpointEllipse);
         btnMidpointEllipse.setText("Ellipse");
@@ -149,7 +161,7 @@ public class Paint extends javax.swing.JFrame {
         btnMidpointEllipse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnMidpointEllipse.setPreferredSize(new java.awt.Dimension(26, 26));
         btnMidpointEllipse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePanel.add(btnMidpointEllipse, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 30, 30));
+        shapePane.add(btnMidpointEllipse, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 30, 30));
 
         shapeButtonGroup.add(btnRectangle);
         btnRectangle.setText("Rectangle");
@@ -160,27 +172,112 @@ public class Paint extends javax.swing.JFrame {
         btnRectangle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnRectangle.setPreferredSize(new java.awt.Dimension(26, 26));
         btnRectangle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePanel.add(btnRectangle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 30, 30));
+        shapePane.add(btnRectangle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 30, 30));
 
-        panelColor.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Color"));
+        pixelPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Size"));
+        pixelPane.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                pixelPaneMouseWheelMoved(evt);
+            }
+        });
+        pixelPane.setLayout(new javax.swing.BoxLayout(pixelPane, javax.swing.BoxLayout.LINE_AXIS));
 
-        panelColor2.setBackground(new java.awt.Color(168, 163, 251));
-        panelColor2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        panelColor2.setPreferredSize(new java.awt.Dimension(30, 30));
-        panelColor2.addMouseListener(new java.awt.event.MouseAdapter() {
+        pixelSlider.setMaximum(50);
+        pixelSlider.setMinimum(2);
+        pixelSlider.setPaintTicks(true);
+        pixelSlider.setSnapToTicks(true);
+        pixelSlider.setValue(2);
+        pixelSlider.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                pixelSliderMouseWheelMoved(evt);
+            }
+        });
+        pixelSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pixelSliderMouseEntered(evt);
+            }
+        });
+        pixelSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                pixelSliderMouseDragged(evt);
+            }
+        });
+        pixelPane.add(pixelSlider);
+
+        colorPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Color"));
+        colorPane.setMaximumSize(new java.awt.Dimension(220, 32767));
+        colorPane.setMinimumSize(new java.awt.Dimension(220, 0));
+        colorPane.setPreferredSize(new java.awt.Dimension(220, 242));
+
+        color1Wrapper.setPreferredSize(new java.awt.Dimension(54, 81));
+
+        color1.setBackground(new java.awt.Color(124, 211, 211));
+        color1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        color1.setFocusable(false);
+        color1.setPreferredSize(new java.awt.Dimension(30, 30));
+        color1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                color1MouseEntered(evt);
+            }
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelColor2MouseClicked(evt);
+                color1MouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout panelColor2Layout = new javax.swing.GroupLayout(panelColor2);
-        panelColor2.setLayout(panelColor2Layout);
-        panelColor2Layout.setHorizontalGroup(
-            panelColor2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout color1Layout = new javax.swing.GroupLayout(color1);
+        color1.setLayout(color1Layout);
+        color1Layout.setHorizontalGroup(
+            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 26, Short.MAX_VALUE)
         );
-        panelColor2Layout.setVerticalGroup(
-            panelColor2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        color1Layout.setVerticalGroup(
+            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+
+        lblColor1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblColor1.setText("Color 1");
+
+        javax.swing.GroupLayout color1WrapperLayout = new javax.swing.GroupLayout(color1Wrapper);
+        color1Wrapper.setLayout(color1WrapperLayout);
+        color1WrapperLayout.setHorizontalGroup(
+            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color1WrapperLayout.createSequentialGroup()
+                .addGap(9, 9, 9)
+                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(lblColor1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        color1WrapperLayout.setVerticalGroup(
+            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color1WrapperLayout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblColor1)
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+
+        color2.setBackground(new java.awt.Color(168, 163, 251));
+        color2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        color2.setPreferredSize(new java.awt.Dimension(30, 30));
+        color2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                color2MouseEntered(evt);
+            }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                color2MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout color2Layout = new javax.swing.GroupLayout(color2);
+        color2.setLayout(color2Layout);
+        color2Layout.setHorizontalGroup(
+            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+        color2Layout.setVerticalGroup(
+            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 26, Short.MAX_VALUE)
         );
 
@@ -194,7 +291,7 @@ public class Paint extends javax.swing.JFrame {
             color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(color2WrapperLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelColor2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(lblColor2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -202,117 +299,59 @@ public class Paint extends javax.swing.JFrame {
             color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(color2WrapperLayout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(panelColor2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblColor2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        color1Wrapper.setPreferredSize(new java.awt.Dimension(54, 81));
-
-        panelColor1.setBackground(new java.awt.Color(124, 211, 211));
-        panelColor1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        panelColor1.setPreferredSize(new java.awt.Dimension(30, 30));
-        panelColor1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelColor1MouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout panelColor1Layout = new javax.swing.GroupLayout(panelColor1);
-        panelColor1.setLayout(panelColor1Layout);
-        panelColor1Layout.setHorizontalGroup(
-            panelColor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-        panelColor1Layout.setVerticalGroup(
-            panelColor1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-
-        lblColor1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblColor1.setText("Color 1");
-
-        javax.swing.GroupLayout color1WrapperLayout = new javax.swing.GroupLayout(color1Wrapper);
-        color1Wrapper.setLayout(color1WrapperLayout);
-        color1WrapperLayout.setHorizontalGroup(
-            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color1WrapperLayout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addComponent(panelColor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(lblColor1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        color1WrapperLayout.setVerticalGroup(
-            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color1WrapperLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(panelColor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblColor1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout panelColorLayout = new javax.swing.GroupLayout(panelColor);
-        panelColor.setLayout(panelColorLayout);
-        panelColorLayout.setHorizontalGroup(
-            panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelColorLayout.createSequentialGroup()
+        javax.swing.GroupLayout colorPaneLayout = new javax.swing.GroupLayout(colorPane);
+        colorPane.setLayout(colorPaneLayout);
+        colorPaneLayout.setHorizontalGroup(
+            colorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, colorPaneLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(color1Wrapper, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(color2Wrapper, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        panelColorLayout.setVerticalGroup(
-            panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(color1Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+        colorPaneLayout.setVerticalGroup(
+            colorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(color1Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
             .addComponent(color2Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        panelPixel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Size"));
-        panelPixel.setLayout(new javax.swing.BoxLayout(panelPixel, javax.swing.BoxLayout.LINE_AXIS));
-
-        pixelSlider.setMaximum(50);
-        pixelSlider.setMinimum(1);
-        pixelSlider.setPaintTicks(true);
-        pixelSlider.setSnapToTicks(true);
-        pixelSlider.setValue(1);
-        pixelSlider.setAlignmentX(0.2F);
-        pixelSlider.setAlignmentY(0.2F);
-        pixelSlider.setFocusable(false);
-        panelPixel.add(pixelSlider);
-
-        javax.swing.GroupLayout sidePanelLayout = new javax.swing.GroupLayout(sidePanel);
-        sidePanel.setLayout(sidePanelLayout);
-        sidePanelLayout.setHorizontalGroup(
-            sidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sidePanelLayout.createSequentialGroup()
-                .addGroup(sidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelPixel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(shapePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(102, 102, 102))
+        javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
+        sidePane.setLayout(sidePaneLayout);
+        sidePaneLayout.setHorizontalGroup(
+            sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(shapePane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(sidePaneLayout.createSequentialGroup()
+                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
-        sidePanelLayout.setVerticalGroup(
-            sidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sidePanelLayout.createSequentialGroup()
-                .addComponent(shapePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(panelPixel, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+        sidePaneLayout.setVerticalGroup(
+            sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(sidePaneLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(panelColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 129, Short.MAX_VALUE))
+                .addComponent(shapePane, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
-        mainPanel.add(sidePanel);
+        mainPane.add(sidePane);
 
         canvas.setBackground(new java.awt.Color(255, 255, 255));
         canvas.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        canvas.setAlignmentX(0.6F);
-        canvas.setAlignmentY(0.6F);
-        canvas.setMaximumSize(new java.awt.Dimension(689, 32767));
-        canvas.setMinimumSize(new java.awt.Dimension(689, 0));
-        canvas.setPreferredSize(new java.awt.Dimension(689, 430));
+        canvas.setToolTipText(""); // NOI18N
+        canvas.setFocusable(false);
+        canvas.setMinimumSize(new java.awt.Dimension(1500, 805));
+        canvas.setPreferredSize(new java.awt.Dimension(1500, 805));
         canvas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 canvasMousePressed(evt);
@@ -322,32 +361,30 @@ public class Paint extends javax.swing.JFrame {
             }
         });
         canvas.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                canvasMouseMoved(evt);
-            }
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 canvasMouseDragged(evt);
             }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                canvasMouseMoved(evt);
+            }
         });
-        canvas.setLayout(new javax.swing.BoxLayout(canvas, javax.swing.BoxLayout.LINE_AXIS));
-        mainPanel.add(canvas);
 
-        javax.swing.GroupLayout containerLayout = new javax.swing.GroupLayout(container);
-        container.setLayout(containerLayout);
-        containerLayout.setHorizontalGroup(
-            containerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(containerLayout.createSequentialGroup()
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+        javax.swing.GroupLayout canvasLayout = new javax.swing.GroupLayout(canvas);
+        canvas.setLayout(canvasLayout);
+        canvasLayout.setHorizontalGroup(
+            canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1496, Short.MAX_VALUE)
         );
-        containerLayout.setVerticalGroup(
-            containerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(containerLayout.createSequentialGroup()
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+        canvasLayout.setVerticalGroup(
+            canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 801, Short.MAX_VALUE)
         );
 
-        bottomPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        mainPane.add(canvas);
+
+        containerPane.add(mainPane);
+
+        bottomPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lbCursor.setText("Cursor : ");
         lbCursor.setMaximumSize(new java.awt.Dimension(45, 16));
@@ -364,13 +401,13 @@ public class Paint extends javax.swing.JFrame {
 
         lbEndPosition.setText("-");
 
-        jLabel1.setText("Copyright by : Haryanto M.Rizal, Neng Mira Rahayu, Arvina Yulia");
+        lbCopyright.setText("Copyright by : Haryanto M.Rizal, Neng Mira Rahayu, Arvina Yulia");
 
-        javax.swing.GroupLayout bottomPanelLayout = new javax.swing.GroupLayout(bottomPanel);
-        bottomPanel.setLayout(bottomPanelLayout);
-        bottomPanelLayout.setHorizontalGroup(
-            bottomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bottomPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout bottomPaneLayout = new javax.swing.GroupLayout(bottomPane);
+        bottomPane.setLayout(bottomPaneLayout);
+        bottomPaneLayout.setHorizontalGroup(
+            bottomPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPaneLayout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addComponent(lbCursor, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -383,23 +420,29 @@ public class Paint extends javax.swing.JFrame {
                 .addComponent(lbEnd)
                 .addGap(0, 0, 0)
                 .addComponent(lbEndPosition, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
+                .addComponent(lbCopyright)
                 .addContainerGap())
         );
-        bottomPanelLayout.setVerticalGroup(
-            bottomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bottomPanelLayout.createSequentialGroup()
+        bottomPaneLayout.setVerticalGroup(
+            bottomPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPaneLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addGroup(bottomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(bottomPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbCursor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbCursorPosition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbStart)
                     .addComponent(lbStartPosition)
                     .addComponent(lbEnd)
                     .addComponent(lbEndPosition)
-                    .addComponent(jLabel1)))
+                    .addComponent(lbCopyright)))
         );
+
+        containerPane.add(bottomPane);
+
+        getContentPane().add(containerPane);
+
+        menuBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         menuFile.setText("File");
 
@@ -440,61 +483,57 @@ public class Paint extends javax.swing.JFrame {
 
         setJMenuBar(menuBar);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(bottomPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(bottomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
-        );
+        getAccessibleContext().setAccessibleDescription("");
 
-        pack();
+        setSize(new java.awt.Dimension(816, 530));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void canvasMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseMoved
-		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-    }//GEN-LAST:event_canvasMouseMoved
+	public Canvas getCanvas() {
+		return (Canvas) canvas;
+	}
 
-    private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
-		startPoint = new Point(evt.getX(), evt.getY());
-		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-    }//GEN-LAST:event_canvasMousePressed
+    private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
+		canvas = new Canvas();
+    }//GEN-LAST:event_menuNewActionPerformed
 
-    private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
+    private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
+		dispose();
+    }//GEN-LAST:event_menuExitActionPerformed
+
+    private void color1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MouseClicked
+		Color color = JColorChooser.showDialog(this, "Choose Color 1", color1.getBackground());
+		if (color == null) {
+			return;
+		}
+		color1.setBackground(color);
+		color1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color1MouseClicked
+
+    private void color2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color2MouseClicked
+		Color color = JColorChooser.showDialog(this, "Choose Color 2", color2.getBackground());
+		if (color == null) {
+			return;
+		}
+		color2.setBackground(color);
+		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color2MouseClicked
+
+    private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
 		endPoint = new Point(evt.getX(), evt.getY());
-		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
 
-		// Cara 1 - Copy Imaage dari Canvas
-		BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = image.createGraphics();
-		canvas.paint(g);
-		
-		// Cara 2 - Copy Image dari Canvas
-//		BufferedImage image, temp = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
-//		Graphics2D g = temp.createGraphics();
-//		g.drawImage((BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight()), null, 0, 0);
-//		image = temp;
-//		canvas.paint(g);
+		System.out.println("Dragged");
 
-		int rgb = image.getRGB(evt.getX(), evt.getY());
-		System.out.println("R=" + String.valueOf((rgb >> 16) & 0xff) + ", G=" + String.valueOf((rgb >> 8) & 0xff) + ", B=" + String.valueOf(rgb & 0xff));
+		((Canvas) canvas).testG.drawImage(backupImage, 0, 0, null);
 
-//		Do nothing if no shape button selected
 		if (shapeButtonGroup.getSelection() == null) {
 			return;
 		}
 
 		int lineSize = pixelSlider.getValue();
-		Color lineColor = panelColor1.getBackground();
-		Color fillColor = panelColor2.getBackground();
+		Color lineColor = color1.getBackground();
+		Color fillColor = color2.getBackground();
 
 		Shape2D newShape = null;
 
@@ -507,46 +546,77 @@ public class Paint extends javax.swing.JFrame {
 		} else if (btnMidpointEllipse.isSelected()) {
 			newShape = new MidpointEllipse(startPoint, endPoint, fillColor, lineSize, lineColor);
 		} else if (btnRectangle.isSelected()) {
+			return;
 		}
 
-		((Canvas) canvas).addShape(newShape);
+		newShape.draw(((Canvas) canvas).testG);
 
-//		drawedShapes.add(newShape);
-		newShape.draw(canvas.getGraphics());
-//		newShape.draw(0, g);
-
-//		canvas.updateUI();
-//		canvas.paintComponents(canvas.getGraphics());
-//		canvas.repaint();
-		hasBeenSaved = false;
-    }//GEN-LAST:event_canvasMouseReleased
-
-    private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
-		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+		canvas.repaint();
     }//GEN-LAST:event_canvasMouseDragged
 
-    private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
-		canvas = new Canvas();
-//		((Canvas)canvas).init();
-    }//GEN-LAST:event_menuNewActionPerformed
+    private void canvasMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseMoved
+		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+    }//GEN-LAST:event_canvasMouseMoved
 
-    private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
-		dispose();
-    }//GEN-LAST:event_menuExitActionPerformed
+    private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
+		System.out.println("Release");
 
-    private void panelColor1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelColor1MouseClicked
-		Color color = JColorChooser.showDialog(this, "Choose Color 1", panelColor1.getBackground());
-		if (color == null) return;
-		panelColor1.setBackground(color);
-		panelColor1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
-    }//GEN-LAST:event_panelColor1MouseClicked
+		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
 
-    private void panelColor2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelColor2MouseClicked
-		Color color = JColorChooser.showDialog(this, "Choose Color 2", panelColor2.getBackground());
-		if (color == null) return;
-		panelColor2.setBackground(color);
-		panelColor2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
-    }//GEN-LAST:event_panelColor2MouseClicked
+		((Canvas) canvas).setMainImage(currentImage);
+
+		BufferedImage image = ((Canvas) canvas).getMainImage();
+		int rgb = image.getRGB(evt.getX(), evt.getY());
+		System.out.println("R=" + String.valueOf((rgb >> 16) & 0xff) + ", G=" + String.valueOf((rgb >> 8) & 0xff) + ", B=" + String.valueOf(rgb & 0xff));
+
+		currentImage.flush();
+		backupImage.flush();
+    }//GEN-LAST:event_canvasMouseReleased
+
+    private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
+		startPoint = new Point(evt.getX(), evt.getY());
+		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+		endPoint = new Point(evt.getX(), evt.getY());
+		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
+
+		backupImage = ((Canvas) canvas).getMainImageCopy();
+		currentImage = ((Canvas) canvas).getMainImageCopy();
+
+		((Canvas) canvas).testG = currentImage.createGraphics();
+		((Canvas) canvas).setMainImage(currentImage);
+
+		hasBeenSaved = false;
+    }//GEN-LAST:event_canvasMousePressed
+
+    private void pixelSliderMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelSliderMouseWheelMoved
+		int newVal = pixelSlider.getValue() - evt.getUnitsToScroll();
+		pixelSlider.setValue(newVal);
+		pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
+    }//GEN-LAST:event_pixelSliderMouseWheelMoved
+
+    private void pixelPaneMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelPaneMouseWheelMoved
+        int newVal = pixelSlider.getValue() - evt.getUnitsToScroll();
+        pixelSlider.setValue(newVal);
+        pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
+    }//GEN-LAST:event_pixelPaneMouseWheelMoved
+
+    private void color1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MouseEntered
+		Color color = color1.getBackground();
+		color1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color1MouseEntered
+
+    private void color2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color2MouseEntered
+		Color color = color2.getBackground();
+		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
+    }//GEN-LAST:event_color2MouseEntered
+
+    private void pixelSliderMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pixelSliderMouseEntered
+		pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
+    }//GEN-LAST:event_pixelSliderMouseEntered
+
+    private void pixelSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pixelSliderMouseDragged
+		pixelSlider.setToolTipText(pixelSlider.getValue() + " pixel");
+    }//GEN-LAST:event_pixelSliderMouseDragged
 
 	/**
 	 * @param args the command line arguments
@@ -582,68 +652,21 @@ public class Paint extends javax.swing.JFrame {
 			}
 		});
 	}
-
-	public class Canvas extends JPanel {
-
-		List<Shape2D> drawedShapes = new LinkedList<Shape2D>();
-
-		public Canvas() {
-			super();
-		}
-
-		public final void init() {
-			addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseReleased(java.awt.event.MouseEvent evt) {
-					canvasMouseReleased(evt);
-//					repaint();
-				}
-
-				public void mousePressed(java.awt.event.MouseEvent evt) {
-					canvasMousePressed(evt);
-//					repaint();
-				}
-			});
-			addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-				public void mouseMoved(java.awt.event.MouseEvent evt) {
-					canvasMouseMoved(evt);
-//					repaint();
-				}
-
-				public void mouseDragged(java.awt.event.MouseEvent evt) {
-					canvasMouseDragged(evt);
-//					repaint();
-				}
-			});
-		}
-
-		@Override
-		protected void paintChildren(Graphics g) {
-			System.out.println("Paint Component");
-			super.paintComponent(g);
-			for (Shape2D shape : drawedShapes) {
-				shape.draw(g);
-			}
-		}
-
-		public void addShape(Shape2D shape) {
-			drawedShapes.add(shape);
-//			Graphics g = ((BufferedImage)this.createImage(this.getWidth(), this.getHeight())).createGraphics();
-//			paintComponent(g);
-//			g.dispose();
-		}
-	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel bottomPanel;
+    private javax.swing.JPanel bottomPane;
     private javax.swing.JToggleButton btnBressenham;
     private javax.swing.JToggleButton btnLineDDA;
     private javax.swing.JToggleButton btnMidpointCircle;
     private javax.swing.JToggleButton btnMidpointEllipse;
     private javax.swing.JToggleButton btnRectangle;
     private javax.swing.JPanel canvas;
+    private javax.swing.JPanel color1;
     private javax.swing.JPanel color1Wrapper;
+    private javax.swing.JPanel color2;
     private javax.swing.JPanel color2Wrapper;
-    private javax.swing.JPanel container;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel colorPane;
+    private javax.swing.JPanel containerPane;
+    private javax.swing.JLabel lbCopyright;
     private javax.swing.JLabel lbCursor;
     private javax.swing.JLabel lbCursorPosition;
     private javax.swing.JLabel lbEnd;
@@ -652,7 +675,7 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JLabel lbStartPosition;
     private javax.swing.JLabel lblColor1;
     private javax.swing.JLabel lblColor2;
-    private javax.swing.JPanel mainPanel;
+    private javax.swing.JPanel mainPane;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem menuExit;
@@ -661,13 +684,10 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuNew;
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuSave;
-    private javax.swing.JPanel panelColor;
-    private javax.swing.JPanel panelColor1;
-    private javax.swing.JPanel panelColor2;
-    private javax.swing.JPanel panelPixel;
+    private javax.swing.JPanel pixelPane;
     private javax.swing.JSlider pixelSlider;
     private javax.swing.ButtonGroup shapeButtonGroup;
-    private javax.swing.JPanel shapePanel;
-    private javax.swing.JPanel sidePanel;
+    private javax.swing.JPanel shapePane;
+    private javax.swing.JPanel sidePane;
     // End of variables declaration//GEN-END:variables
 }
