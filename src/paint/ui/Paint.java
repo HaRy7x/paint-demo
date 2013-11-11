@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JColorChooser;
 import paint.tool.CircleTool;
 import paint.tool.EllipseTool;
+import paint.tool.FloodFillTool;
 import paint.tool.LineBressenhamTool;
 import paint.tool.LineDDATool;
 import paint.tool.Tool;
@@ -27,7 +28,7 @@ public class Paint extends javax.swing.JFrame {
 	 */
 	public Paint() {
 		initComponents();
-//		setupCanvas();
+		setupCanvas();
 	}
 
 	private void setupCanvas() {
@@ -67,6 +68,7 @@ public class Paint extends javax.swing.JFrame {
         color2 = new javax.swing.JPanel();
         lblColor2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
+        btnFloodFill = new javax.swing.JToggleButton();
         canvas = new paint.ui.Canvas();
         bottomPane = new javax.swing.JPanel();
         lbCursor = new javax.swing.JLabel();
@@ -356,6 +358,18 @@ public class Paint extends javax.swing.JFrame {
             .addGap(0, 110, Short.MAX_VALUE)
         );
 
+        shapeButtonGroup.add(btnFloodFill);
+        btnFloodFill.setText("FF");
+        btnFloodFill.setToolTipText("Flood Fill");
+        btnFloodFill.setMaximumSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.setMinimumSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.setPreferredSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFloodFillActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
         sidePane.setLayout(sidePaneLayout);
         sidePaneLayout.setHorizontalGroup(
@@ -366,7 +380,12 @@ public class Paint extends javax.swing.JFrame {
                     .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(sidePaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnFloodFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(108, 108, 108))
         );
         sidePaneLayout.setVerticalGroup(
             sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,7 +397,9 @@ public class Paint extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFloodFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -633,6 +654,10 @@ public class Paint extends javax.swing.JFrame {
 		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
     }//GEN-LAST:event_color2MousePressed
 
+    private void btnFloodFillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFloodFillActionPerformed
+		if (!(selectedTool instanceof FloodFillTool)) selectedTool = new FloodFillTool(this);
+    }//GEN-LAST:event_btnFloodFillActionPerformed
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -670,6 +695,7 @@ public class Paint extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JPanel bottomPane;
     private javax.swing.JToggleButton btnBressenham;
+    private javax.swing.JToggleButton btnFloodFill;
     private javax.swing.JToggleButton btnLineDDA;
     private javax.swing.JToggleButton btnMidpointCircle;
     private javax.swing.JToggleButton btnMidpointEllipse;
