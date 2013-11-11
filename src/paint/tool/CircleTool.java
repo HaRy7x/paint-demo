@@ -5,6 +5,7 @@
 package paint.tool;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import paint.shape.MidpointCircle;
@@ -47,9 +48,19 @@ public class CircleTool extends Tool {
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
 		Shape2D newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
-		newShape.draw(canvas.getMainGraphics());
+//		newShape.draw(canvas.getMainGraphics());
+
+		BufferedImage image = (BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight());
+		Graphics graphics = image.createGraphics();
+		canvas.paint(graphics);
+		newShape.draw(image);
+
+		canvas.getMainGraphics().drawImage(image, 0, 0, null);
 
 		canvas.repaint();
+		graphics.dispose();
+		currentImage.flush();
+		backupImage.flush();
 	}
 
 	@Override

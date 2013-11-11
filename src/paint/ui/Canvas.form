@@ -7,7 +7,7 @@
     </Property>
     <Property name="toolTipText" type="java.lang.String" value=""/>
     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[689, 430]"/>
+      <Dimension value="[30000, 30000]"/>
     </Property>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[689, 430]"/>

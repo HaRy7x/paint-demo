@@ -36,9 +36,7 @@ public class Canvas extends javax.swing.JPanel {
 
 	@Override
 	public void paint(Graphics g) {
-		System.out.println("Paint Component");
 		super.paintComponent(g);
-//			g.setColor(getBackground());
 		g.drawImage(mainImage, 0, 0, null);
 	}
 
@@ -82,7 +80,7 @@ public class Canvas extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
         setToolTipText("");
-        setMaximumSize(new java.awt.Dimension(689, 430));
+        setMaximumSize(new java.awt.Dimension(30000, 30000));
         setMinimumSize(new java.awt.Dimension(689, 430));
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(689, 430));

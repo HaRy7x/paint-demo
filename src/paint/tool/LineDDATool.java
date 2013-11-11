@@ -46,7 +46,7 @@ public class LineDDATool extends Tool {
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
 		Shape2D newShape = new LineDDA(startPoint, endPoint, lineSize, lineColor);
-		newShape.draw(((Canvas) canvas).getMainGraphics());
+		newShape.draw(currentImage);
 
 		canvas.repaint();
 	}

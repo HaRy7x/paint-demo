@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import paint.Drawable;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -89,5 +90,11 @@ public abstract class Shape2D implements Drawable {
 		int offset = size / 2;
 		g.setColor(pixelColor);
 		g.fillOval(x - offset, y - offset, size, size);
+	}
+
+	@Override
+	public void draw(BufferedImage image) {
+		Graphics g = image.createGraphics(); draw(g);
+		g.dispose();
 	}
 }

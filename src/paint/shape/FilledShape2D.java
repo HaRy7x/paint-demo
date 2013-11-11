@@ -5,7 +5,9 @@
 package paint.shape;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -40,5 +42,24 @@ public abstract class FilledShape2D extends Shape2D {
 
 	public void setBorderColor(Color borderColor) {
 		this.fillColor = borderColor;
+	}
+
+	public void boundaryFill(BufferedImage image, int x, int y, Color fillColor, Color boundColor){
+//		try {
+		Color currcol = new Color(image.getRGB(x, y));
+		if (!currcol.equals(boundColor) && !(currcol.equals(fillColor)) /* && x<=image.getHeight() && y<=image.getWidth()*/){
+			image.setRGB(x, y, fillColor.getRGB());
+			boundaryFill(image, x+1, y, fillColor, boundColor);
+			boundaryFill(image, x-1, y, fillColor, boundColor);
+			boundaryFill(image, x, y+1, fillColor, boundColor);
+			boundaryFill(image, x, y-1, fillColor, boundColor);
+		}
+//		} catch(Exception ignored) { return; }
+	}
+
+	@Override
+	public void draw(BufferedImage image) {
+		Graphics g = image.getGraphics(); draw(g);
+		boundaryFill(image, midpoint.x, midpoint.y, fillColor, lineColor);
 	}
 }
