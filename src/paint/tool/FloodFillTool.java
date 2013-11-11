@@ -7,6 +7,7 @@ package paint.tool;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.SwingUtilities;
 import paint.ui.Canvas;
 import paint.ui.Paint;
 
@@ -24,6 +25,15 @@ public class FloodFillTool extends Tool {
 	@Override
 	public void actionMouseClicked(MouseEvent evt, Canvas canvas) {
 		super.actionMouseClicked(evt, canvas);
+
+		Color color = (SwingUtilities.isLeftMouseButton(evt)) ? parent.color1.getBackground() : parent.color2.getBackground();
+
+		currentImage = canvas.getMainImageCopy();
+		Color currcol = new Color(currentImage.getRGB(evt.getX(), evt.getY()));
+		floodFill4(currentImage, evt.getX(), evt.getY(), color, currcol);
+
+		canvas.setMainGraphics(currentImage.createGraphics());
+		canvas.setMainImage(currentImage);
 	}
 
 	@Override
@@ -33,19 +43,7 @@ public class FloodFillTool extends Tool {
 
 	@Override
 	public void actionMouseReleased(MouseEvent evt, Canvas canvas) {
-		System.out.println("Released");
 		super.actionMouseReleased(evt, canvas);
-
-		Color color = parent.color1.getBackground();
-		System.out.println("Color1: " + color);
-		Color color2 = parent.color2.getBackground();
-
-		currentImage = canvas.getMainImageCopy();
-		Color currcol = new Color(currentImage.getRGB(evt.getX(), evt.getY()));
-		floodFill4(currentImage, evt.getX(), evt.getY(), color, currcol);
-
-		canvas.setMainGraphics(currentImage.createGraphics());
-		canvas.setMainImage(currentImage);
 	}
 
 	public void floodFill4(BufferedImage image, int x, int y, Color fillColor, Color interiorColor){
