@@ -46,7 +46,7 @@ public class LineBressenhamTool extends Tool {
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
 		Shape2D newShape = new LineBressenham(startPoint, endPoint, lineSize, lineColor);
-		newShape.draw(currentImage);
+		newShape.applyLineStyle(parent.getLineStyle()).draw(currentImage);
 
 		canvas.repaint();
 	}

@@ -7,6 +7,7 @@ package paint.shape;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -30,15 +31,21 @@ public class MidpointCircle extends FilledShape2D {
 		super(startpoint, endpoint, color, borderSize, borderColor);
 	}
 
+	@Override
+	public void setLineStyle(LineStyle lineStyle) {
+		if (lineStyle instanceof MaskedLine) ((MaskedLine) lineStyle).width *= 3;
+		super.setLineStyle(lineStyle);
+	}
+
 	public void drawPixelOnOktan(Graphics g, int Xc, int Yc, int X, int Y) {
-        drawPixel(g, Xc + X, Yc + Y);
-        drawPixel(g, Xc - X, Yc + Y);
-        drawPixel(g, Xc + X, Yc - Y);
-        drawPixel(g, Xc - X, Yc - Y);
-        drawPixel(g, Xc + Y, Yc + X);
-        drawPixel(g, Xc - Y, Yc + X);
-        drawPixel(g, Xc + Y, Yc - X);
-        drawPixel(g, Xc - Y, Yc - X);
+		lineStyle.drawPixel(g, Xc + X, Yc + Y, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - X, Yc + Y, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc + X, Yc - Y, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - X, Yc - Y, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc + Y, Yc + X, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - Y, Yc + X, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc + Y, Yc - X, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - Y, Yc - X, lineSize, lineColor);
     }
 
 	public void drawMidpointCircle(Graphics g, int Xc, int Yc, int R) {
@@ -59,11 +66,35 @@ public class MidpointCircle extends FilledShape2D {
     }
 
 	@Override
+	public boolean intersect(int x, int y) {
+		return (midpoint.distance(new Point(x, y)) <= (midpoint.distance(endpoint)));
+	}
+
+	@Override
+	public void fillArea(BufferedImage image, int x, int y, Color fillColor) {
+		int S1 = (int) startpoint.distance(midpoint);
+		int S2 = (int) endpoint.distance(midpoint);
+		int R = (S1 > S2) ? S1 : S2;
+		for (int xn = midpoint.x - R; xn <= midpoint.x + R; xn++) {
+			for (int yn = midpoint.y - R; yn <= midpoint.y + R; yn++) {
+				if (intersect(xn, yn)) image.setRGB(xn, yn, fillColor.getRGB());
+			}
+		}
+	}
+
+	@Override
 	public void draw(Graphics g) {
 		// jari-jari adalah jarak startpoint ke midpoint
 		int R = (int) startpoint.distance(midpoint);
 
 		if (R == 0) drawPixel(g, midpoint.x, midpoint.y);
 		else drawMidpointCircle(g, midpoint.x, midpoint.y, R);
+	}
+
+	@Override
+	public void draw(BufferedImage image) {
+		Graphics g = image.getGraphics();
+		fillArea(image, midpoint.x, midpoint.y);
+		draw(g);
 	}
 }

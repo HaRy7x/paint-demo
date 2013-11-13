@@ -48,7 +48,7 @@ public class CircleTool extends Tool {
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
 		Shape2D newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
-//		newShape.draw(canvas.getMainGraphics());
+		newShape.setLineStyle(parent.getLineStyle());
 
 		BufferedImage image = (BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight());
 		Graphics graphics = image.createGraphics();

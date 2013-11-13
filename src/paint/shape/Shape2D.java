@@ -23,6 +23,8 @@ public abstract class Shape2D implements Drawable {
 	protected int lineSize = 1;
 	protected Color lineColor = Color.BLACK;
 
+	protected LineStyle lineStyle = new SolidLine();
+
 	public Shape2D(Point startpoint, Point endpoint) {
 		this.startpoint = startpoint;
 		this.endpoint = endpoint;
@@ -69,6 +71,15 @@ public abstract class Shape2D implements Drawable {
 
 	public void setLineColor(Color lineColor) {
 		this.lineColor = lineColor;
+	}
+
+	public void setLineStyle(LineStyle lineStyle) {
+		this.lineStyle = lineStyle;
+	}
+
+	public Shape2D applyLineStyle(LineStyle lineStyle) {
+		this.lineStyle = lineStyle;
+		return this;
 	}
 
 	protected final Point calculateMidpoint(Point startpoint, Point endpoint) {

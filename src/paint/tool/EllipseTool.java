@@ -47,7 +47,7 @@ public class EllipseTool extends Tool {
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
 		Shape2D newShape = new MidpointEllipse(startPoint, endPoint, fillColor, lineSize, lineColor);
-		newShape.draw(canvas.getMainGraphics());
+		newShape.applyLineStyle(parent.getLineStyle()).draw(currentImage);
 
 		canvas.repaint();
 	}

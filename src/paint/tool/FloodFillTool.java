@@ -47,19 +47,15 @@ public class FloodFillTool extends Tool {
 	}
 
 	public void floodFill4(BufferedImage image, int x, int y, Color fillColor, Color interiorColor){
-//		try {
-//		if (x>image.getMinX() && x < image.getWidth() && y>image.getMinY() && y < image.getHeight()) {
-
-		Color currcol = new Color(image.getRGB(x, y));
-		if (currcol.equals(interiorColor)){
-			image.setRGB(x, y, fillColor.getRGB());
-			floodFill4(image, x+1, y, fillColor, interiorColor);
-			floodFill4(image, x-1, y, fillColor, interiorColor);
-			floodFill4(image, x, y+1, fillColor, interiorColor);
-			floodFill4(image, x, y-1, fillColor, interiorColor);
+		if ((x >= image.getMinX() && y >= image.getMinY()) && (x < image.getWidth() && y < image.getHeight())) {
+			Color currcol = new Color(image.getRGB(x, y));
+			if (!fillColor.equals(interiorColor) && currcol.equals(interiorColor)){
+				image.setRGB(x, y, fillColor.getRGB());
+				floodFill4(image, x+1, y, fillColor, interiorColor);
+				floodFill4(image, x-1, y, fillColor, interiorColor);
+				floodFill4(image, x, y+1, fillColor, interiorColor);
+				floodFill4(image, x, y-1, fillColor, interiorColor);
+			}
 		}
-
-//		} catch(Exception ignored) { return; }
-//		}
 	}
 }

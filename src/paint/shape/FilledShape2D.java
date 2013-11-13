@@ -45,21 +45,37 @@ public abstract class FilledShape2D extends Shape2D {
 	}
 
 	public void boundaryFill(BufferedImage image, int x, int y, Color fillColor, Color boundColor){
-//		try {
-		Color currcol = new Color(image.getRGB(x, y));
-		if (!currcol.equals(boundColor) && !(currcol.equals(fillColor)) /* && x<=image.getHeight() && y<=image.getWidth()*/){
-			image.setRGB(x, y, fillColor.getRGB());
-			boundaryFill(image, x+1, y, fillColor, boundColor);
-			boundaryFill(image, x-1, y, fillColor, boundColor);
-			boundaryFill(image, x, y+1, fillColor, boundColor);
-			boundaryFill(image, x, y-1, fillColor, boundColor);
+		if ((x >= image.getMinX() && y >= image.getMinY()) && (x < image.getWidth() && y < image.getHeight())) {
+			Color currcol = new Color(image.getRGB(x, y));
+			if (!currcol.equals(boundColor) && !currcol.equals(fillColor)){
+				image.setRGB(x, y, fillColor.getRGB());
+				boundaryFill(image, x+1, y, fillColor, boundColor);
+				boundaryFill(image, x-1, y, fillColor, boundColor);
+				boundaryFill(image, x, y+1, fillColor, boundColor);
+				boundaryFill(image, x, y-1, fillColor, boundColor);
+			}
 		}
-//		} catch(Exception ignored) { return; }
+	}
+
+	public abstract boolean intersect(int x, int y);
+
+	public void fillArea(BufferedImage image, int x, int y) {
+		fillArea(image, x, y, fillColor);
+	}
+
+	public void fillArea(BufferedImage image, int x, int y, Color fillColor) {
+		for (int xn = startpoint.x; xn <= endpoint.x; xn++) {
+			for (int yn = startpoint.y; yn <= endpoint.y; yn++) {
+				if (intersect(xn, yn)) image.setRGB(xn, yn, fillColor.getRGB());
+			}
+		}
 	}
 
 	@Override
 	public void draw(BufferedImage image) {
-		Graphics g = image.getGraphics(); draw(g);
+		Graphics g = image.getGraphics();
+//		fillArea(image, midpoint.x, midpoint.y);
+		draw(g);
 		boundaryFill(image, midpoint.x, midpoint.y, fillColor, lineColor);
 	}
 }

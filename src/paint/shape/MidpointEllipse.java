@@ -7,6 +7,7 @@ package paint.shape;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -30,11 +31,17 @@ public class MidpointEllipse extends FilledShape2D {
 		super(startpoint, endpoint, color, borderSize, borderColor);
 	}
 
+	@Override
+	public void setLineStyle(LineStyle lineStyle) {
+		if (lineStyle instanceof MaskedLine) ((MaskedLine) lineStyle).width *= 7;
+		super.setLineStyle(lineStyle);
+	}
+
 	public void drawPixelOnQuadran(Graphics g, int Xc, int Yc, int Rx, int Ry) {
-		drawPixel(g, Xc + Rx, Yc + Ry);
-		drawPixel(g, Xc - Rx, Yc + Ry);
-		drawPixel(g, Xc + Rx, Yc - Ry);
-		drawPixel(g, Xc - Rx, Yc - Ry);
+		lineStyle.drawPixel(g, Xc + Rx, Yc + Ry, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - Rx, Yc + Ry, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc + Rx, Yc - Ry, lineSize, lineColor);
+		lineStyle.drawPixel(g, Xc - Rx, Yc - Ry, lineSize, lineColor);
 	}
 
 	public void drawMidpointEllipse(Graphics g, int Xc, int Yc, int Rx, int Ry) {
@@ -75,6 +82,11 @@ public class MidpointEllipse extends FilledShape2D {
 			}
 			drawPixelOnQuadran(g, Xc, Yc, X, Y);
 		}
+	}
+
+	@Override
+	public boolean intersect(int x, int y) {
+		return false;
 	}
 
 	@Override

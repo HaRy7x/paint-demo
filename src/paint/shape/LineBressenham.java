@@ -107,7 +107,7 @@ public class LineBressenham extends Shape2D {
 //		dy = 2*dy;
 //		dx = 2*dx;
 
-		drawPixel(g, X0, Y0);
+		lineStyle.drawPixel(g, X0, Y0, lineSize, lineColor);
 
 		if (dx > dy) {
 			Pk = 2*dy - dx;
@@ -121,7 +121,7 @@ public class LineBressenham extends Shape2D {
 //					Pk = Pk-2*dy;
 					Pk = Pk + 2*dy;
 				}
-				drawPixel(g, X0, Y0);
+				lineStyle.drawPixel(g, X0, Y0, lineSize, lineColor);
 			}
 		} else {
 			Pk = 2*dx - dy;
@@ -135,7 +135,7 @@ public class LineBressenham extends Shape2D {
 //					Pk = Pk + dx;
 					Pk = Pk + 2*dx;
 				}
-				drawPixel(g, X0, Y0);
+				lineStyle.drawPixel(g, X0, Y0, lineSize, lineColor);
 			}
 		}
 	}

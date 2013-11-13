@@ -5,6 +5,7 @@
 package paint.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -28,7 +29,8 @@ public class Canvas extends javax.swing.JPanel {
 
 	private void setup() {
 		setSize(getPreferredSize());
-		mainImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		Dimension maxSize = getMaximumSize();
+		mainImage = new BufferedImage(maxSize.width, maxSize.height, BufferedImage.TYPE_INT_RGB);
 		mainGraphics = mainImage.createGraphics();
 		mainGraphics.setColor(Color.white);
 		mainGraphics.fillRect(0, 0, getWidth(), getHeight());
@@ -80,10 +82,10 @@ public class Canvas extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
         setToolTipText("");
-        setMaximumSize(new java.awt.Dimension(30000, 30000));
-        setMinimumSize(new java.awt.Dimension(689, 430));
+        setMaximumSize(new java.awt.Dimension(1800, 1000));
+        setMinimumSize(new java.awt.Dimension(1800, 1000));
         setName(""); // NOI18N
-        setPreferredSize(new java.awt.Dimension(689, 430));
+        setPreferredSize(new java.awt.Dimension(1800, 1000));
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

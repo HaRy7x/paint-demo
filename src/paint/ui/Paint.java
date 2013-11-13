@@ -7,6 +7,9 @@ package paint.ui;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.swing.JColorChooser;
+import paint.shape.LineStyle;
+import paint.shape.MaskedLine;
+import paint.shape.SolidLine;
 import paint.tool.CircleTool;
 import paint.tool.EllipseTool;
 import paint.tool.FloodFillTool;
@@ -34,7 +37,6 @@ public class Paint extends javax.swing.JFrame {
 	private void setupCanvas() {
 		Canvas canvas = getCanvas();
 		canvas.setSize(canvas.getPreferredSize());
-		System.out.println("Dim: " + canvas.getSize());
 		canvas.setMainImage(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB));
 		canvas.setMainGraphics(canvas.getMainImage().createGraphics());
 		canvas.getMainGraphics().setColor(Color.WHITE);
@@ -58,8 +60,9 @@ public class Paint extends javax.swing.JFrame {
         btnMidpointCircle = new javax.swing.JToggleButton();
         btnMidpointEllipse = new javax.swing.JToggleButton();
         btnRectangle = new javax.swing.JToggleButton();
-        pixelPane = new javax.swing.JPanel();
-        pixelSlider = new javax.swing.JSlider();
+        btnFloodFill = new javax.swing.JToggleButton();
+        btnBrush = new javax.swing.JToggleButton();
+        btnColorPicker = new javax.swing.JToggleButton();
         colorPane = new javax.swing.JPanel();
         color1Wrapper = new javax.swing.JPanel();
         color1 = new javax.swing.JPanel();
@@ -67,8 +70,12 @@ public class Paint extends javax.swing.JFrame {
         color2Wrapper = new javax.swing.JPanel();
         color2 = new javax.swing.JPanel();
         lblColor2 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        btnFloodFill = new javax.swing.JToggleButton();
+        lineStylePane = new javax.swing.JPanel();
+        cmbLineStyle = new javax.swing.JComboBox();
+        fillStylePane = new javax.swing.JPanel();
+        cmbFillStyle = new javax.swing.JComboBox();
+        pixelPane = new javax.swing.JPanel();
+        pixelSlider = new javax.swing.JSlider();
         canvas = new paint.ui.Canvas();
         bottomPane = new javax.swing.JPanel();
         lbCursor = new javax.swing.JLabel();
@@ -83,36 +90,43 @@ public class Paint extends javax.swing.JFrame {
         menuNew = new javax.swing.JMenuItem();
         menuOpen = new javax.swing.JMenuItem();
         menuSave = new javax.swing.JMenuItem();
+        menuSaveAs = new javax.swing.JMenuItem();
         menuExit = new javax.swing.JMenuItem();
+        menuEdit = new javax.swing.JMenu();
         menuHelp = new javax.swing.JMenu();
         menuAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cemungudh Paint");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setMinimumSize(new java.awt.Dimension(805, 505));
+        setMaximumSize(new java.awt.Dimension(1800, 1000));
+        setMinimumSize(new java.awt.Dimension(810, 550));
         setName("PaintFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(805, 505));
-        setResizable(false);
+        setPreferredSize(new java.awt.Dimension(810, 550));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.X_AXIS));
 
+        containerPane.setMaximumSize(new java.awt.Dimension(1800, 1000));
         containerPane.setMinimumSize(new java.awt.Dimension(810, 500));
         containerPane.setPreferredSize(new java.awt.Dimension(810, 500));
-        containerPane.setLayout(new javax.swing.BoxLayout(containerPane, javax.swing.BoxLayout.Y_AXIS));
+        containerPane.setLayout(new javax.swing.BoxLayout(containerPane, javax.swing.BoxLayout.PAGE_AXIS));
 
         mainPane.setFocusable(false);
-        mainPane.setMinimumSize(new java.awt.Dimension(801, 450));
+        mainPane.setMaximumSize(new java.awt.Dimension(1800, 1000));
+        mainPane.setMinimumSize(new java.awt.Dimension(800, 450));
         mainPane.setPreferredSize(new java.awt.Dimension(800, 450));
+        mainPane.setLayout(new javax.swing.BoxLayout(mainPane, javax.swing.BoxLayout.LINE_AXIS));
 
-        sidePane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        sidePane.setMaximumSize(new java.awt.Dimension(112, 1500));
+        sidePane.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        sidePane.setMaximumSize(new java.awt.Dimension(112, 1000));
         sidePane.setMinimumSize(new java.awt.Dimension(112, 1000));
         sidePane.setPreferredSize(new java.awt.Dimension(112, 1000));
+        sidePane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        shapePane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Shapes", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
+        shapePane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Shapes", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11))); // NOI18N
         shapePane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         shapePane.setDoubleBuffered(false);
         shapePane.setFocusable(false);
+        shapePane.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         shapePane.setMaximumSize(new java.awt.Dimension(2000, 212));
         shapePane.setMinimumSize(new java.awt.Dimension(2000, 212));
         shapePane.setName(""); // NOI18N
@@ -120,6 +134,7 @@ public class Paint extends javax.swing.JFrame {
         shapePane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         shapeButtonGroup.add(btnLineDDA);
+        btnLineDDA.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnLineDDA.setText("Line");
         btnLineDDA.setToolTipText("DDA Algorithm");
         btnLineDDA.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -138,6 +153,7 @@ public class Paint extends javax.swing.JFrame {
         shapePane.add(btnLineDDA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 30, 30));
 
         shapeButtonGroup.add(btnBressenham);
+        btnBressenham.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnBressenham.setText("Line");
         btnBressenham.setToolTipText("Bressenham Algorithm");
         btnBressenham.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -156,6 +172,7 @@ public class Paint extends javax.swing.JFrame {
         shapePane.add(btnBressenham, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 30, 30));
 
         shapeButtonGroup.add(btnMidpointCircle);
+        btnMidpointCircle.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnMidpointCircle.setText("Circle");
         btnMidpointCircle.setToolTipText("Midpoint Circle Algorithm");
         btnMidpointCircle.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -171,9 +188,10 @@ public class Paint extends javax.swing.JFrame {
                 btnMidpointCircleActionPerformed(evt);
             }
         });
-        shapePane.add(btnMidpointCircle, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 30, 30));
+        shapePane.add(btnMidpointCircle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 30, 30));
 
         shapeButtonGroup.add(btnMidpointEllipse);
+        btnMidpointEllipse.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnMidpointEllipse.setText("Ellipse");
         btnMidpointEllipse.setToolTipText("Midpoint Ellipse Algorithm");
         btnMidpointEllipse.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -190,6 +208,7 @@ public class Paint extends javax.swing.JFrame {
         shapePane.add(btnMidpointEllipse, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 30, 30));
 
         shapeButtonGroup.add(btnRectangle);
+        btnRectangle.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnRectangle.setText("Rectangle");
         btnRectangle.setToolTipText("Rectangle");
         btnRectangle.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -198,9 +217,205 @@ public class Paint extends javax.swing.JFrame {
         btnRectangle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnRectangle.setPreferredSize(new java.awt.Dimension(26, 26));
         btnRectangle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        shapePane.add(btnRectangle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 30, 30));
+        btnRectangle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRectangleActionPerformed(evt);
+            }
+        });
+        shapePane.add(btnRectangle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 50, 30, 30));
 
-        pixelPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Size"));
+        shapeButtonGroup.add(btnFloodFill);
+        btnFloodFill.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        btnFloodFill.setText("Fill");
+        btnFloodFill.setToolTipText("Flood Fill");
+        btnFloodFill.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnFloodFill.setFocusPainted(false);
+        btnFloodFill.setMaximumSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.setMinimumSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.setPreferredSize(new java.awt.Dimension(25, 25));
+        btnFloodFill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFloodFillActionPerformed(evt);
+            }
+        });
+        shapePane.add(btnFloodFill, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 30, 30));
+
+        shapeButtonGroup.add(btnBrush);
+        btnBrush.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        btnBrush.setText("Brush");
+        btnBrush.setToolTipText("Brush Tool");
+        btnBrush.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnBrush.setFocusPainted(false);
+        btnBrush.setFocusable(false);
+        btnBrush.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnBrush.setMaximumSize(new java.awt.Dimension(30, 30));
+        btnBrush.setMinimumSize(new java.awt.Dimension(30, 30));
+        btnBrush.setPreferredSize(new java.awt.Dimension(30, 30));
+        btnBrush.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnBrush.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBrushActionPerformed(evt);
+            }
+        });
+        shapePane.add(btnBrush, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 30, 30));
+
+        shapeButtonGroup.add(btnColorPicker);
+        btnColorPicker.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        btnColorPicker.setText("Picker");
+        btnColorPicker.setToolTipText("Color Picker");
+        btnColorPicker.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnColorPicker.setFocusPainted(false);
+        btnColorPicker.setMaximumSize(new java.awt.Dimension(25, 25));
+        btnColorPicker.setMinimumSize(new java.awt.Dimension(25, 25));
+        btnColorPicker.setPreferredSize(new java.awt.Dimension(25, 25));
+        btnColorPicker.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnColorPickerActionPerformed(evt);
+            }
+        });
+        shapePane.add(btnColorPicker, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 30, 30));
+
+        sidePane.add(shapePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 110, 130));
+
+        colorPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Color", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11))); // NOI18N
+        colorPane.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        colorPane.setMaximumSize(new java.awt.Dimension(220, 32767));
+        colorPane.setMinimumSize(new java.awt.Dimension(220, 0));
+        colorPane.setPreferredSize(new java.awt.Dimension(220, 242));
+        colorPane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        color1Wrapper.setPreferredSize(new java.awt.Dimension(54, 81));
+
+        color1.setBackground(new java.awt.Color(124, 211, 211));
+        color1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        color1.setPreferredSize(new java.awt.Dimension(30, 30));
+        color1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                color1MouseEntered(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                color1MousePressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout color1Layout = new javax.swing.GroupLayout(color1);
+        color1.setLayout(color1Layout);
+        color1Layout.setHorizontalGroup(
+            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+        color1Layout.setVerticalGroup(
+            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+
+        lblColor1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        lblColor1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblColor1.setText("Color 1");
+
+        javax.swing.GroupLayout color1WrapperLayout = new javax.swing.GroupLayout(color1Wrapper);
+        color1Wrapper.setLayout(color1WrapperLayout);
+        color1WrapperLayout.setHorizontalGroup(
+            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color1WrapperLayout.createSequentialGroup()
+                .addGap(9, 9, 9)
+                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(lblColor1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        color1WrapperLayout.setVerticalGroup(
+            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color1WrapperLayout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblColor1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        colorPane.add(color1Wrapper, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 16, 48, 60));
+
+        color2.setBackground(new java.awt.Color(168, 163, 251));
+        color2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        color2.setPreferredSize(new java.awt.Dimension(30, 30));
+        color2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                color2MouseEntered(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                color2MousePressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout color2Layout = new javax.swing.GroupLayout(color2);
+        color2.setLayout(color2Layout);
+        color2Layout.setHorizontalGroup(
+            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+        color2Layout.setVerticalGroup(
+            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 26, Short.MAX_VALUE)
+        );
+
+        lblColor2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        lblColor2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblColor2.setText("Color 2");
+        lblColor2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout color2WrapperLayout = new javax.swing.GroupLayout(color2Wrapper);
+        color2Wrapper.setLayout(color2WrapperLayout);
+        color2WrapperLayout.setHorizontalGroup(
+            color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color2WrapperLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(lblColor2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        color2WrapperLayout.setVerticalGroup(
+            color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(color2WrapperLayout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblColor2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        colorPane.add(color2Wrapper, new org.netbeans.lib.awtextra.AbsoluteConstraints(54, 16, -1, 60));
+
+        sidePane.add(colorPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 130, 110, 80));
+
+        lineStylePane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Line Style", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11))); // NOI18N
+        lineStylePane.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lineStylePane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        cmbLineStyle.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        cmbLineStyle.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Solid", "Dashed", "Dotted" }));
+        cmbLineStyle.setToolTipText(cmbLineStyle.getName());
+        cmbLineStyle.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        cmbLineStyle.setRequestFocusEnabled(false);
+        lineStylePane.add(cmbLineStyle, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 90, 30));
+
+        sidePane.add(lineStylePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 110, 60));
+
+        fillStylePane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Fill Style", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11))); // NOI18N
+        fillStylePane.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        fillStylePane.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        cmbFillStyle.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        cmbFillStyle.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Hollow", "Fill", "Bordered", "Pattern" }));
+        cmbFillStyle.setToolTipText("");
+        cmbFillStyle.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        cmbFillStyle.setRequestFocusEnabled(false);
+        fillStylePane.add(cmbFillStyle, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 90, 30));
+
+        sidePane.add(fillStylePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 320, 110, 60));
+
+        pixelPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Line Width", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 11))); // NOI18N
+        pixelPane.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        pixelPane.setInheritsPopupMenu(true);
         pixelPane.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
                 pixelPaneMouseWheelMoved(evt);
@@ -230,188 +445,21 @@ public class Paint extends javax.swing.JFrame {
         });
         pixelPane.add(pixelSlider);
 
-        colorPane.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Color"));
-        colorPane.setMaximumSize(new java.awt.Dimension(220, 32767));
-        colorPane.setMinimumSize(new java.awt.Dimension(220, 0));
-        colorPane.setPreferredSize(new java.awt.Dimension(220, 242));
+        sidePane.add(pixelPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 110, 50));
 
-        color1Wrapper.setPreferredSize(new java.awt.Dimension(54, 81));
-
-        color1.setBackground(new java.awt.Color(124, 211, 211));
-        color1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        color1.setFocusable(false);
-        color1.setPreferredSize(new java.awt.Dimension(30, 30));
-        color1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                color1MouseEntered(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                color1MousePressed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout color1Layout = new javax.swing.GroupLayout(color1);
-        color1.setLayout(color1Layout);
-        color1Layout.setHorizontalGroup(
-            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-        color1Layout.setVerticalGroup(
-            color1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-
-        lblColor1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblColor1.setText("Color 1");
-
-        javax.swing.GroupLayout color1WrapperLayout = new javax.swing.GroupLayout(color1Wrapper);
-        color1Wrapper.setLayout(color1WrapperLayout);
-        color1WrapperLayout.setHorizontalGroup(
-            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color1WrapperLayout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(lblColor1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        color1WrapperLayout.setVerticalGroup(
-            color1WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color1WrapperLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(color1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblColor1)
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-
-        color2.setBackground(new java.awt.Color(168, 163, 251));
-        color2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        color2.setPreferredSize(new java.awt.Dimension(30, 30));
-        color2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                color2MouseEntered(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                color2MousePressed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout color2Layout = new javax.swing.GroupLayout(color2);
-        color2.setLayout(color2Layout);
-        color2Layout.setHorizontalGroup(
-            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-        color2Layout.setVerticalGroup(
-            color2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 26, Short.MAX_VALUE)
-        );
-
-        lblColor2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblColor2.setText("Color 2");
-        lblColor2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-
-        javax.swing.GroupLayout color2WrapperLayout = new javax.swing.GroupLayout(color2Wrapper);
-        color2Wrapper.setLayout(color2WrapperLayout);
-        color2WrapperLayout.setHorizontalGroup(
-            color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color2WrapperLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(lblColor2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        color2WrapperLayout.setVerticalGroup(
-            color2WrapperLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(color2WrapperLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(color2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblColor2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout colorPaneLayout = new javax.swing.GroupLayout(colorPane);
-        colorPane.setLayout(colorPaneLayout);
-        colorPaneLayout.setHorizontalGroup(
-            colorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, colorPaneLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(color1Wrapper, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(color2Wrapper, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        colorPaneLayout.setVerticalGroup(
-            colorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(color1Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-            .addComponent(color2Wrapper, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 110, Short.MAX_VALUE)
-        );
-
-        shapeButtonGroup.add(btnFloodFill);
-        btnFloodFill.setText("FF");
-        btnFloodFill.setToolTipText("Flood Fill");
-        btnFloodFill.setMaximumSize(new java.awt.Dimension(25, 25));
-        btnFloodFill.setMinimumSize(new java.awt.Dimension(25, 25));
-        btnFloodFill.setPreferredSize(new java.awt.Dimension(25, 25));
-        btnFloodFill.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFloodFillActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
-        sidePane.setLayout(sidePaneLayout);
-        sidePaneLayout.setHorizontalGroup(
-            sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(shapePane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-            .addGroup(sidePaneLayout.createSequentialGroup()
-                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(sidePaneLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnFloodFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(108, 108, 108))
-        );
-        sidePaneLayout.setVerticalGroup(
-            sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sidePaneLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(shapePane, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(pixelPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(colorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFloodFill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        mainPane.add(sidePane);
 
         canvas.setBackground(new java.awt.Color(255, 255, 255));
-        canvas.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        canvas.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
         canvas.setToolTipText(""); // NOI18N
         canvas.setAlignmentX(0.0F);
         canvas.setAlignmentY(0.0F);
+        canvas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         canvas.setFocusable(false);
-        canvas.setMaximumSize(new java.awt.Dimension(30000, 30000));
-        canvas.setMinimumSize(new java.awt.Dimension(1500, 800));
-        canvas.setPreferredSize(new java.awt.Dimension(1500, 800));
+        canvas.setMaximumSize(new java.awt.Dimension(1800, 1000));
+        canvas.setMinimumSize(new java.awt.Dimension(1800, 1000));
+        canvas.setName(""); // NOI18N
+        canvas.setPreferredSize(new java.awt.Dimension(1800, 1000));
         canvas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 canvasMousePressed(evt);
@@ -433,31 +481,19 @@ public class Paint extends javax.swing.JFrame {
         canvas.setLayout(canvasLayout);
         canvasLayout.setHorizontalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1496, Short.MAX_VALUE)
+            .addGap(0, 1796, Short.MAX_VALUE)
         );
         canvasLayout.setVerticalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 796, Short.MAX_VALUE)
+            .addGap(0, 996, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout mainPaneLayout = new javax.swing.GroupLayout(mainPane);
-        mainPane.setLayout(mainPaneLayout);
-        mainPaneLayout.setHorizontalGroup(
-            mainPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPaneLayout.createSequentialGroup()
-                .addComponent(sidePane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(canvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        mainPaneLayout.setVerticalGroup(
-            mainPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(sidePane, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(canvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        mainPane.add(canvas);
 
         containerPane.add(mainPane);
 
         bottomPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        bottomPane.setMaximumSize(new java.awt.Dimension(1800, 20));
 
         lbCursor.setText("Cursor : ");
         lbCursor.setMaximumSize(new java.awt.Dimension(45, 16));
@@ -515,11 +551,13 @@ public class Paint extends javax.swing.JFrame {
 
         getContentPane().add(containerPane);
 
-        menuBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        menuBar.setBackground(new java.awt.Color(153, 153, 153));
 
         menuFile.setText("File");
+        menuFile.setMargin(new java.awt.Insets(0, 6, 0, 6));
 
         menuNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        menuNew.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuNew.setText("New");
         menuNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -529,14 +567,22 @@ public class Paint extends javax.swing.JFrame {
         menuFile.add(menuNew);
 
         menuOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        menuOpen.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuOpen.setText("Open");
         menuFile.add(menuOpen);
 
         menuSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        menuSave.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuSave.setText("Save");
         menuFile.add(menuSave);
 
+        menuSaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        menuSaveAs.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        menuSaveAs.setText("Save As");
+        menuFile.add(menuSaveAs);
+
         menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        menuExit.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuExit.setText("Exit");
         menuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -547,9 +593,15 @@ public class Paint extends javax.swing.JFrame {
 
         menuBar.add(menuFile);
 
-        menuHelp.setText("Help");
+        menuEdit.setText("Edit");
+        menuEdit.setMargin(new java.awt.Insets(0, 6, 0, 6));
+        menuBar.add(menuEdit);
 
-        menuAbout.setText("jMenuItem5");
+        menuHelp.setText("Help");
+        menuHelp.setMargin(new java.awt.Insets(0, 6, 0, 6));
+
+        menuAbout.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        menuAbout.setText("About");
         menuHelp.add(menuAbout);
 
         menuBar.add(menuHelp);
@@ -558,12 +610,20 @@ public class Paint extends javax.swing.JFrame {
 
         getAccessibleContext().setAccessibleDescription("");
 
-        setSize(new java.awt.Dimension(816, 530));
+        setSize(new java.awt.Dimension(826, 534));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
 	public Canvas getCanvas() {
 		return (Canvas) canvas;
+	}
+
+	public LineStyle getLineStyle() {
+		if ("Dashed".equals((String)cmbLineStyle.getSelectedItem())) {
+			return new MaskedLine(pixelSlider.getValue(), 5, 3);
+		} else if ("Dotted".equals((String)cmbLineStyle.getSelectedItem())) {
+			return new MaskedLine(pixelSlider.getValue(), 1, 3);
+		} else return new SolidLine();
 	}
 
     private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
@@ -576,7 +636,7 @@ public class Paint extends javax.swing.JFrame {
 
     private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
 		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		selectedTool.actionMouseDragged(evt, getCanvas());
+		if (selectedTool != null) selectedTool.actionMouseDragged(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseDragged
 
     private void canvasMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseMoved
@@ -585,13 +645,13 @@ public class Paint extends javax.swing.JFrame {
 
     private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		selectedTool.actionMouseReleased(evt, getCanvas());
+		if (selectedTool != null) selectedTool.actionMouseReleased(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseReleased
 
     private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
 		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		selectedTool.actionMouseClicked(evt, getCanvas());
+		if (selectedTool != null) selectedTool.actionMouseClicked(evt, getCanvas());
     }//GEN-LAST:event_canvasMousePressed
 
     private void pixelSliderMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelSliderMouseWheelMoved
@@ -658,6 +718,18 @@ public class Paint extends javax.swing.JFrame {
 		if (!(selectedTool instanceof FloodFillTool)) selectedTool = new FloodFillTool(this);
     }//GEN-LAST:event_btnFloodFillActionPerformed
 
+    private void btnBrushActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrushActionPerformed
+		selectedTool = null;
+    }//GEN-LAST:event_btnBrushActionPerformed
+
+    private void btnRectangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRectangleActionPerformed
+		selectedTool = null;
+    }//GEN-LAST:event_btnRectangleActionPerformed
+
+    private void btnColorPickerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColorPickerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnColorPickerActionPerformed
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -695,19 +767,23 @@ public class Paint extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JPanel bottomPane;
     private javax.swing.JToggleButton btnBressenham;
+    private javax.swing.JToggleButton btnBrush;
+    private javax.swing.JToggleButton btnColorPicker;
     private javax.swing.JToggleButton btnFloodFill;
     private javax.swing.JToggleButton btnLineDDA;
     private javax.swing.JToggleButton btnMidpointCircle;
     private javax.swing.JToggleButton btnMidpointEllipse;
     private javax.swing.JToggleButton btnRectangle;
     public javax.swing.JPanel canvas;
+    private javax.swing.JComboBox cmbFillStyle;
+    private javax.swing.JComboBox cmbLineStyle;
     public javax.swing.JPanel color1;
     private javax.swing.JPanel color1Wrapper;
     public javax.swing.JPanel color2;
     private javax.swing.JPanel color2Wrapper;
     private javax.swing.JPanel colorPane;
     private javax.swing.JPanel containerPane;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel fillStylePane;
     private javax.swing.JLabel lbCopyright;
     private javax.swing.JLabel lbCursor;
     private javax.swing.JLabel lbCursorPosition;
@@ -717,15 +793,18 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JLabel lbStartPosition;
     private javax.swing.JLabel lblColor1;
     private javax.swing.JLabel lblColor2;
+    private javax.swing.JPanel lineStylePane;
     private javax.swing.JPanel mainPane;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu menuEdit;
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenu menuHelp;
     private javax.swing.JMenuItem menuNew;
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuSave;
+    private javax.swing.JMenuItem menuSaveAs;
     private javax.swing.JPanel pixelPane;
     public javax.swing.JSlider pixelSlider;
     private javax.swing.ButtonGroup shapeButtonGroup;

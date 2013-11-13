@@ -48,11 +48,11 @@ public class LineDDA extends Shape2D {
 		xIncrement = (float)dx / (float)steps;
 		yIncrement = (float)dy / (float)steps;
 		
-		drawPixel(g, Math.round(X), Math.round(Y));
+		lineStyle.drawPixel(g, Math.round(X), Math.round(Y), lineSize, lineColor);
 		for (k = 0; k < steps; k++){
 			X += xIncrement;
 			Y += yIncrement;
-			drawPixel(g, Math.round(X), Math.round(Y));
+			lineStyle.drawPixel(g, Math.round(X), Math.round(Y), lineSize, lineColor);
 		}
 	}
 	@Override
