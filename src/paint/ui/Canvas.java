@@ -9,12 +9,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 
 /**
  *
  * @author HaRy7x
  */
-public class Canvas extends javax.swing.JPanel {
+public class Canvas extends javax.swing.JPanel implements Printable {
 
 	private BufferedImage mainImage;
 	private Graphics mainGraphics;
@@ -70,6 +73,25 @@ public class Canvas extends javax.swing.JPanel {
 
 	public Graphics getMainGraphics() {
 		return this.mainGraphics;
+	}
+
+	@Override
+	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+		Graphics2D g2d = (Graphics2D) graphics;
+		graphics.translate((int) (pageFormat.getImageableX()), (int) (pageFormat.getImageableY()));
+		if (pageIndex == 0) {
+			double pageWidth = pageFormat.getImageableWidth();
+			double pageHeight = pageFormat.getImageableHeight();
+			double imageWidth = mainImage.getWidth();
+			double imageHeight = mainImage.getHeight();
+			double scaleX = pageWidth / imageWidth;
+			double scaleY = pageHeight / imageHeight;
+			double scaleFactor = Math.min(scaleX, scaleY);
+			g2d.scale(scaleFactor, scaleFactor);
+			graphics.drawImage(mainImage, 0, 0, null);
+			return Printable.PAGE_EXISTS;
+		}
+		return Printable.NO_SUCH_PAGE;
 	}
 
 	/**

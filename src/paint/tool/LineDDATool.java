@@ -59,7 +59,6 @@ public class LineDDATool extends Tool {
 		super.actionMouseClicked(evt, canvas);
 
 		canvas.setMainImage(currentImage);
-
 		currentImage.flush();
 		backupImage.flush();
 		System.gc();
