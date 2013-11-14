@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
  */
 public abstract class FilledShape2D extends Shape2D {
 
+	protected String fillType = "Hollow";
 	protected Color fillColor = Color.WHITE;
 
 	public FilledShape2D(Point startpoint, Point endpoint) {
@@ -36,12 +37,28 @@ public abstract class FilledShape2D extends Shape2D {
 		this.fillColor = fillColor;
 	}
 
-	public Color getBorderColor() {
+	public String getFillType() {
+		return fillType;
+	}
+
+	public void setFillType(String fillType) {
+		this.fillType = fillType;
+	}
+
+	public Color getFillColor() {
 		return fillColor;
 	}
 
+	public void setFillColor(Color fillColor) {
+		this.fillColor = fillColor;
+	}
+
+	public Color getBorderColor() {
+		return lineColor;
+	}
+
 	public void setBorderColor(Color borderColor) {
-		this.fillColor = borderColor;
+		this.lineColor = borderColor;
 	}
 
 	public void boundaryFill(BufferedImage image, int x, int y, Color fillColor, Color boundColor){
@@ -64,9 +81,11 @@ public abstract class FilledShape2D extends Shape2D {
 	}
 
 	public void fillArea(BufferedImage image, int x, int y, Color fillColor) {
-		for (int xn = startpoint.x; xn <= endpoint.x; xn++) {
-			for (int yn = startpoint.y; yn <= endpoint.y; yn++) {
-				if (intersect(xn, yn)) image.setRGB(xn, yn, fillColor.getRGB());
+		if ((x >= image.getMinX() && y >= image.getMinY()) && (x < image.getWidth() && y < image.getHeight())) {
+			for (int xn = startpoint.x; xn <= endpoint.x; xn++) {
+				for (int yn = startpoint.y; yn <= endpoint.y; yn++) {
+					if (intersect(xn, yn)) image.setRGB(xn, yn, fillColor.getRGB());
+				}
 			}
 		}
 	}
@@ -76,6 +95,6 @@ public abstract class FilledShape2D extends Shape2D {
 		Graphics g = image.getGraphics();
 //		fillArea(image, midpoint.x, midpoint.y);
 		draw(g);
-		boundaryFill(image, midpoint.x, midpoint.y, fillColor, lineColor);
+		if (!"Hollow".equals(fillType)) boundaryFill(image, midpoint.x, midpoint.y, fillColor, lineColor);
 	}
 }

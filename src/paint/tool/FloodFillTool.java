@@ -44,6 +44,9 @@ public class FloodFillTool extends Tool {
 	@Override
 	public void actionMouseReleased(MouseEvent evt, Canvas canvas) {
 		super.actionMouseReleased(evt, canvas);
+
+		currentImage.flush();
+		System.gc();
 	}
 
 	public void floodFill4(BufferedImage image, int x, int y, Color fillColor, Color interiorColor){

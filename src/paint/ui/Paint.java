@@ -10,7 +10,9 @@ import javax.swing.JColorChooser;
 import paint.shape.LineStyle;
 import paint.shape.MaskedLine;
 import paint.shape.SolidLine;
+import paint.tool.BrushTool;
 import paint.tool.CircleTool;
+import paint.tool.ColorPicker;
 import paint.tool.EllipseTool;
 import paint.tool.FloodFillTool;
 import paint.tool.LineBressenhamTool;
@@ -91,6 +93,7 @@ public class Paint extends javax.swing.JFrame {
         menuOpen = new javax.swing.JMenuItem();
         menuSave = new javax.swing.JMenuItem();
         menuSaveAs = new javax.swing.JMenuItem();
+        menuSaveAs1 = new javax.swing.JMenuItem();
         menuExit = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
         menuHelp = new javax.swing.JMenu();
@@ -581,6 +584,11 @@ public class Paint extends javax.swing.JFrame {
         menuSaveAs.setText("Save As");
         menuFile.add(menuSaveAs);
 
+        menuSaveAs1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        menuSaveAs1.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        menuSaveAs1.setText("Print");
+        menuFile.add(menuSaveAs1);
+
         menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
         menuExit.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuExit.setText("Exit");
@@ -598,7 +606,7 @@ public class Paint extends javax.swing.JFrame {
         menuBar.add(menuEdit);
 
         menuHelp.setText("Help");
-        menuHelp.setMargin(new java.awt.Insets(0, 6, 0, 6));
+        menuHelp.setMargin(new java.awt.Insets(0, 5, 0, 5));
 
         menuAbout.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuAbout.setText("About");
@@ -627,7 +635,8 @@ public class Paint extends javax.swing.JFrame {
 	}
 
     private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
-		canvas = new Canvas();
+		getCanvas().setup();
+		getCanvas().repaint();
     }//GEN-LAST:event_menuNewActionPerformed
 
     private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
@@ -719,7 +728,7 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_btnFloodFillActionPerformed
 
     private void btnBrushActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrushActionPerformed
-		selectedTool = null;
+		if (!(selectedTool instanceof BrushTool)) selectedTool = new BrushTool(this);
     }//GEN-LAST:event_btnBrushActionPerformed
 
     private void btnRectangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRectangleActionPerformed
@@ -727,7 +736,7 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRectangleActionPerformed
 
     private void btnColorPickerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColorPickerActionPerformed
-        // TODO add your handling code here:
+		if (!(selectedTool instanceof ColorPicker)) selectedTool = new ColorPicker(this);
     }//GEN-LAST:event_btnColorPickerActionPerformed
 
 	/**
@@ -775,8 +784,8 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JToggleButton btnMidpointEllipse;
     private javax.swing.JToggleButton btnRectangle;
     public javax.swing.JPanel canvas;
-    private javax.swing.JComboBox cmbFillStyle;
-    private javax.swing.JComboBox cmbLineStyle;
+    public javax.swing.JComboBox cmbFillStyle;
+    public javax.swing.JComboBox cmbLineStyle;
     public javax.swing.JPanel color1;
     private javax.swing.JPanel color1Wrapper;
     public javax.swing.JPanel color2;
@@ -805,6 +814,7 @@ public class Paint extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JMenuItem menuSaveAs;
+    private javax.swing.JMenuItem menuSaveAs1;
     private javax.swing.JPanel pixelPane;
     public javax.swing.JSlider pixelSlider;
     private javax.swing.ButtonGroup shapeButtonGroup;

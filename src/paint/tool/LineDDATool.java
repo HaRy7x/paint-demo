@@ -7,6 +7,7 @@ package paint.tool;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.SwingUtilities;
 import paint.shape.LineDDA;
 import paint.shape.Shape2D;
 import paint.ui.Canvas;
@@ -20,6 +21,8 @@ public class LineDDATool extends Tool {
 
 	private BufferedImage backupImage;
 	private BufferedImage currentImage;
+	private Color lineColor;
+	private int lineSize;
 
 	public LineDDATool(Paint parent) {
 		super(parent);
@@ -28,6 +31,9 @@ public class LineDDATool extends Tool {
 	@Override
 	public void actionMouseClicked(MouseEvent evt, Canvas canvas) {
 		super.actionMouseClicked(evt, canvas);
+
+		lineColor = (SwingUtilities.isLeftMouseButton(evt)) ? parent.color1.getBackground() : parent.color2.getBackground();
+		lineSize = parent.pixelSlider.getValue();
 
 		backupImage = canvas.getMainImageCopy();
 		currentImage = canvas.getMainImageCopy();
@@ -39,9 +45,6 @@ public class LineDDATool extends Tool {
 	@Override
 	public void actionMouseDragged(MouseEvent evt, Canvas canvas) {
 		super.actionMouseDragged(evt, canvas);
-
-		int lineSize = parent.pixelSlider.getValue();
-		Color lineColor = parent.color1.getBackground();
 
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
@@ -57,12 +60,9 @@ public class LineDDATool extends Tool {
 
 		canvas.setMainImage(currentImage);
 
-//		BufferedImage image = ((Canvas) canvas).getMainImage();
-//		int rgb = image.getRGB(evt.getX(), evt.getY());
-//		System.out.println("R=" + String.valueOf((rgb >> 16) & 0xff) + ", G=" + String.valueOf((rgb >> 8) & 0xff) + ", B=" + String.valueOf(rgb & 0xff));
-
 		currentImage.flush();
 		backupImage.flush();
+		System.gc();
 	}
 
 }

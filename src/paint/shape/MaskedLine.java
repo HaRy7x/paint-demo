@@ -35,9 +35,25 @@ public class MaskedLine implements LineStyle {
 		System.arraycopy(pattern, 0, this.pattern, 0, pattern.length);
 	}
 
+	public int getDash() {
+		return dash;
+	}
+
+	public void setDash(int dash) {
+		this.dash = dash;
+	}
+
+	public int getInterDash() {
+		return interDash;
+	}
+
+	public void setInterDash(int interDash) {
+		this.interDash = interDash;
+	}
+
 	public final void init() {
-		double powDash = Math.pow(2, dash * width/2);
-		double powInterDash = Math.pow(2, interDash * width/2);
+		double powDash = Math.pow(2, (dash <= 1) ? dash : dash * width);
+		double powInterDash = Math.pow(2, interDash * width);
 		double bitsPow = powDash * powInterDash;
 
 		pixelMask = (long) (bitsPow - powInterDash);
@@ -61,7 +77,6 @@ public class MaskedLine implements LineStyle {
 			int offset = size / 2;
 			g.setColor(pixelColor);
 			g.fillOval(x - offset, y - offset, size, size);
-//			g.fillRect(x - offset, y - offset, size, size);
 		}
 		if ((defaultMask & mask) == 0x00 ) init();
 		defaultMask <<= 1;

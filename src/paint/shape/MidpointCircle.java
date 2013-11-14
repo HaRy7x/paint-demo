@@ -33,7 +33,7 @@ public class MidpointCircle extends FilledShape2D {
 
 	@Override
 	public void setLineStyle(LineStyle lineStyle) {
-		if (lineStyle instanceof MaskedLine) ((MaskedLine) lineStyle).width *= 3;
+//		if (lineStyle instanceof MaskedLine) ((MaskedLine) lineStyle).width;
 		super.setLineStyle(lineStyle);
 	}
 
@@ -94,7 +94,7 @@ public class MidpointCircle extends FilledShape2D {
 	@Override
 	public void draw(BufferedImage image) {
 		Graphics g = image.getGraphics();
-		fillArea(image, midpoint.x, midpoint.y);
+		if (!"Hollow".equals(fillType)) fillArea(image, midpoint.x, midpoint.y);
 		draw(g);
 	}
 }

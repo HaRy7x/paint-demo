@@ -5,11 +5,13 @@
 package paint.tool;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.SwingUtilities;
+import paint.shape.FilledShape2D;
+import paint.shape.LineStyle;
+import paint.shape.MaskedLine;
 import paint.shape.MidpointCircle;
-import paint.shape.Shape2D;
 import paint.ui.Canvas;
 import paint.ui.Paint;
 
@@ -21,6 +23,10 @@ public class CircleTool extends Tool {
 	
 	private BufferedImage backupImage;
 	private BufferedImage currentImage;
+	private String fillType;
+	private Color fillColor;
+	private Color lineColor;
+	private int lineSize;
 
 	public CircleTool(Paint parent) {
 		super(parent);
@@ -33,6 +39,17 @@ public class CircleTool extends Tool {
 		backupImage = canvas.getMainImageCopy();
 		currentImage = canvas.getMainImageCopy();
 
+		if (SwingUtilities.isLeftMouseButton(evt)) {
+			lineColor = parent.color1.getBackground();
+			fillColor = parent.color2.getBackground();
+		} else {
+			lineColor = parent.color2.getBackground();
+			fillColor = parent.color1.getBackground();
+		}
+
+		fillType = (String) parent.cmbFillStyle.getSelectedItem();
+		lineSize = parent.pixelSlider.getValue();
+
 		canvas.setMainGraphics(currentImage.createGraphics());
 		canvas.setMainImage(currentImage);
 	}
@@ -41,26 +58,21 @@ public class CircleTool extends Tool {
 	public void actionMouseDragged(MouseEvent evt, Canvas canvas) {
 		super.actionMouseDragged(evt, canvas);
 
-		Color fillColor = parent.color2.getBackground();
-		Color lineColor = parent.color1.getBackground();
-		int lineSize = parent.pixelSlider.getValue();
-
 		canvas.getMainGraphics().drawImage(backupImage, 0, 0, null);
 
-		Shape2D newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
-		newShape.setLineStyle(parent.getLineStyle());
-
-		BufferedImage image = (BufferedImage) canvas.createImage(canvas.getWidth(), canvas.getHeight());
-		Graphics graphics = image.createGraphics();
-		canvas.paint(graphics);
-		newShape.draw(image);
-
-		canvas.getMainGraphics().drawImage(image, 0, 0, null);
+		FilledShape2D newShape = new MidpointCircle(startPoint, endPoint, fillColor, lineSize, lineColor);
+		LineStyle style = parent.getLineStyle();
+		if (style instanceof MaskedLine) {
+			MaskedLine maskedStyle = (MaskedLine)style;
+//			maskedStyle.setDash((int)(maskedStyle.getDash()*1.5f));
+//			maskedStyle.setInterDash((int) (maskedStyle.getInterDash()*1.5f));
+			maskedStyle.setDash((int)(maskedStyle.getDash()*2));
+			maskedStyle.setInterDash((int) (maskedStyle.getInterDash()*2));
+		}
+		newShape.setFillType(fillType);
+		newShape.applyLineStyle(style).draw(currentImage);
 
 		canvas.repaint();
-		graphics.dispose();
-		currentImage.flush();
-		backupImage.flush();
 	}
 
 	@Override
@@ -70,5 +82,6 @@ public class CircleTool extends Tool {
 		canvas.setMainImage(currentImage);
 		currentImage.flush();
 		backupImage.flush();
+		System.gc();
 	}
 }

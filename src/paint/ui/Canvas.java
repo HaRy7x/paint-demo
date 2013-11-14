@@ -27,7 +27,7 @@ public class Canvas extends javax.swing.JPanel {
 		setup();
 	}
 
-	private void setup() {
+	public final void setup() {
 		setSize(getPreferredSize());
 		Dimension maxSize = getMaximumSize();
 		mainImage = new BufferedImage(maxSize.width, maxSize.height, BufferedImage.TYPE_INT_RGB);
