@@ -8,8 +8,13 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 import paint.shape.LineStyle;
 import paint.shape.MaskedLine;
 import paint.shape.SolidLine;
@@ -29,7 +34,11 @@ import paint.tool.Tool;
 public class Paint extends javax.swing.JFrame {
 
 	private String projectName = "new-painting";
+	private String savedFileLoc;
+
 	private boolean hasBeenSaved;
+
+	JFileChooser fileChooser;
 
 	Tool selectedTool;
 
@@ -39,6 +48,37 @@ public class Paint extends javax.swing.JFrame {
 	public Paint() {
 		initComponents();
 		setupCanvas();
+		setupFileChooser();
+	}
+
+	private void setupFileChooser() {
+		fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(new FileFilter() {
+			String[] supportedImageFormat = ImageIO.getWriterFormatNames();
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()) return true;
+				for (String format : supportedImageFormat) {
+					if (file.getAbsolutePath().toLowerCase().endsWith("." + format.toLowerCase())) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public String getDescription() {
+				StringBuilder description  = new StringBuilder("Image (");
+				for (String format : supportedImageFormat) {
+					if (description.toString().toLowerCase().indexOf(format) == -1) {
+						description.append("*.").append(format.toLowerCase()).append(", ");
+					}
+				}
+				description = new StringBuilder(description.substring(0, description.lastIndexOf(", ")));
+				return description.append(")").toString();
+			}
+		});
 	}
 
 	private void setupCanvas() {
@@ -578,16 +618,31 @@ public class Paint extends javax.swing.JFrame {
         menuOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         menuOpen.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuOpen.setText("Open");
+        menuOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuOpenActionPerformed(evt);
+            }
+        });
         menuFile.add(menuOpen);
 
         menuSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         menuSave.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuSave.setText("Save");
+        menuSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuSaveActionPerformed(evt);
+            }
+        });
         menuFile.add(menuSave);
 
-        menuSaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        menuSaveAs.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         menuSaveAs.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
         menuSaveAs.setText("Save As");
+        menuSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuSaveAsActionPerformed(evt);
+            }
+        });
         menuFile.add(menuSaveAs);
 
         menuPrint.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
@@ -647,6 +702,14 @@ public class Paint extends javax.swing.JFrame {
 		}
 	}
 
+	public boolean isHasBeenSaved() {
+		return hasBeenSaved;
+	}
+
+	public void setHasBeenSaved(boolean hasBeenSaved) {
+		this.hasBeenSaved = hasBeenSaved;
+	}
+
     private void menuNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewActionPerformed
 		getCanvas().setup();
 		getCanvas().repaint();
@@ -658,9 +721,7 @@ public class Paint extends javax.swing.JFrame {
 
     private void canvasMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseDragged
 		lbCursorPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		if (selectedTool != null) {
-			selectedTool.actionMouseDragged(evt, getCanvas());
-		}
+		if (selectedTool != null) selectedTool.actionMouseDragged(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseDragged
 
     private void canvasMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseMoved
@@ -669,17 +730,13 @@ public class Paint extends javax.swing.JFrame {
 
     private void canvasMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMouseReleased
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		if (selectedTool != null) {
-			selectedTool.actionMouseReleased(evt, getCanvas());
-		}
+		if (selectedTool != null) selectedTool.actionMouseReleased(evt, getCanvas());
     }//GEN-LAST:event_canvasMouseReleased
 
     private void canvasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasMousePressed
 		lbStartPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
 		lbEndPosition.setText("[" + evt.getX() + "," + evt.getY() + "]");
-		if (selectedTool != null) {
-			selectedTool.actionMouseClicked(evt, getCanvas());
-		}
+		if (selectedTool != null) selectedTool.actionMouseClicked(evt, getCanvas());
     }//GEN-LAST:event_canvasMousePressed
 
     private void pixelSliderMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pixelSliderMouseWheelMoved
@@ -713,57 +770,41 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_pixelSliderMouseDragged
 
     private void btnMidpointEllipseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMidpointEllipseActionPerformed
-		if (!(selectedTool instanceof EllipseTool)) {
-			selectedTool = new EllipseTool(this);
-		}
+		if (!(selectedTool instanceof EllipseTool)) selectedTool = new EllipseTool(this);
     }//GEN-LAST:event_btnMidpointEllipseActionPerformed
 
     private void btnMidpointCircleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMidpointCircleActionPerformed
-		if (!(selectedTool instanceof CircleTool)) {
-			selectedTool = new CircleTool(this);
-		}
+		if (!(selectedTool instanceof CircleTool)) selectedTool = new CircleTool(this);
     }//GEN-LAST:event_btnMidpointCircleActionPerformed
 
     private void btnLineDDAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLineDDAActionPerformed
-		if (!(selectedTool instanceof LineDDATool)) {
-			selectedTool = new LineDDATool(this);
-		}
+		if (!(selectedTool instanceof LineDDATool)) selectedTool = new LineDDATool(this);
     }//GEN-LAST:event_btnLineDDAActionPerformed
 
     private void btnBressenhamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBressenhamActionPerformed
-		if (!(selectedTool instanceof LineBressenhamTool)) {
-			selectedTool = new LineBressenhamTool(this);
-		}
+		if (!(selectedTool instanceof LineBressenhamTool)) selectedTool = new LineBressenhamTool(this);
     }//GEN-LAST:event_btnBressenhamActionPerformed
 
     private void color1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color1MousePressed
 		Color color = JColorChooser.showDialog(this, "Choose Color 1", color1.getBackground());
-		if (color == null) {
-			return;
-		}
+		if (color == null) return;
 		color1.setBackground(color);
 		color1.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
     }//GEN-LAST:event_color1MousePressed
 
     private void color2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_color2MousePressed
 		Color color = JColorChooser.showDialog(this, "Choose Color 2", color2.getBackground());
-		if (color == null) {
-			return;
-		}
+		if (color == null) return;
 		color2.setBackground(color);
 		color2.setToolTipText("RGB={" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "}");
     }//GEN-LAST:event_color2MousePressed
 
     private void btnFloodFillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFloodFillActionPerformed
-		if (!(selectedTool instanceof FloodFillTool)) {
-			selectedTool = new FloodFillTool(this);
-		}
+		if (!(selectedTool instanceof FloodFillTool)) selectedTool = new FloodFillTool(this);
     }//GEN-LAST:event_btnFloodFillActionPerformed
 
     private void btnBrushActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrushActionPerformed
-		if (!(selectedTool instanceof BrushTool)) {
-			selectedTool = new BrushTool(this);
-		}
+		if (!(selectedTool instanceof BrushTool)) selectedTool = new BrushTool(this);
     }//GEN-LAST:event_btnBrushActionPerformed
 
     private void btnRectangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRectangleActionPerformed
@@ -771,9 +812,7 @@ public class Paint extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRectangleActionPerformed
 
     private void btnColorPickerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnColorPickerActionPerformed
-		if (!(selectedTool instanceof ColorPicker)) {
-			selectedTool = new ColorPicker(this);
-		}
+		if (!(selectedTool instanceof ColorPicker)) selectedTool = new ColorPicker(this);
     }//GEN-LAST:event_btnColorPickerActionPerformed
 
     private void menuPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPrintActionPerformed
@@ -788,6 +827,56 @@ public class Paint extends javax.swing.JFrame {
 			}
 		}
     }//GEN-LAST:event_menuPrintActionPerformed
+
+    private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveActionPerformed
+		try {
+			String fileName = null;
+			if (savedFileLoc != null && !"".equals(savedFileLoc)) {
+				fileName = savedFileLoc.trim();
+				String extension = fileName.substring(fileName.lastIndexOf(".")+1);
+				ImageIO.write(getCanvas().getMainImageCopy(), extension, new File(fileName));
+			} else {
+				int retval = fileChooser.showSaveDialog(this);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					fileName = fileChooser.getSelectedFile().getAbsolutePath();
+					String extension = fileName.substring(fileName.lastIndexOf(".")+1);
+					ImageIO.write(getCanvas().getMainImageCopy(), extension, fileChooser.getSelectedFile());
+				}
+			}
+			savedFileLoc = fileName;
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error saving file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'.\nMessage : " + ex.getLocalizedMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+		}
+    }//GEN-LAST:event_menuSaveActionPerformed
+
+    private void menuOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpenActionPerformed
+		BufferedImage image;
+		try {
+			int retval = fileChooser.showOpenDialog(this);
+			if (retval == JFileChooser.APPROVE_OPTION) {
+				image = ImageIO.read(fileChooser.getSelectedFile());
+				getCanvas().setSize(image.getWidth(), image.getHeight());
+				getCanvas().setMainImage(image);
+				savedFileLoc = fileChooser.getSelectedFile().getAbsolutePath();
+			}
+		} catch (IOException ex) {
+			JOptionPane.showMessageDialog(this, "Error opening file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'.\nMessage : " + ex.getLocalizedMessage(), "Open File Error", JOptionPane.ERROR_MESSAGE);
+		}
+    }//GEN-LAST:event_menuOpenActionPerformed
+
+    private void menuSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveAsActionPerformed
+         try {
+			int retval = fileChooser.showSaveDialog(this);
+			if (retval == JFileChooser.APPROVE_OPTION) {
+				String fileName = fileChooser.getSelectedFile().getName();
+				String extension = fileName.substring(fileName.lastIndexOf(".")+1);
+				ImageIO.write(getCanvas().getMainImageCopy(), extension, fileChooser.getSelectedFile());
+				savedFileLoc = fileChooser.getSelectedFile().getAbsolutePath();
+			}
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error saving file '" + fileChooser.getSelectedFile().getAbsolutePath() + "'.\nMessage : " + ex.getLocalizedMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+		}
+    }//GEN-LAST:event_menuSaveAsActionPerformed
 
 	/**
 	 * @param args the command line arguments

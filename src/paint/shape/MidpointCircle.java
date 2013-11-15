@@ -95,6 +95,6 @@ public class MidpointCircle extends FilledShape2D {
 	public void draw(BufferedImage image) {
 		Graphics g = image.getGraphics();
 		if (!"Hollow".equals(fillType)) fillArea(image, midpoint.x, midpoint.y);
-		draw(g);
+		if (!"Fill".equals(fillType)) draw(g);
 	}
 }

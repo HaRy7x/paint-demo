@@ -30,6 +30,11 @@ public class Canvas extends javax.swing.JPanel implements Printable {
 		setup();
 	}
 
+	public Canvas(Paint mainApp) {
+		initComponents();
+		setup();
+	}
+
 	public final void setup() {
 		setSize(getPreferredSize());
 		Dimension maxSize = getMaximumSize();

@@ -40,11 +40,11 @@ public class EllipseTool extends Tool {
 		currentImage = canvas.getMainImageCopy();
 
 		if (SwingUtilities.isLeftMouseButton(evt)) {
-			lineColor = parent.color1.getBackground();
 			fillColor = parent.color2.getBackground();
+			lineColor = ("Fill".equals(parent.cmbFillStyle.getSelectedItem())) ? fillColor : parent.color1.getBackground();
 		} else {
-			lineColor = parent.color2.getBackground();
 			fillColor = parent.color1.getBackground();
+			lineColor = ("Fill".equals(parent.cmbFillStyle.getSelectedItem())) ? fillColor : parent.color2.getBackground();
 		}
 
 		fillType = (String) parent.cmbFillStyle.getSelectedItem();

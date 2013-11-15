@@ -52,7 +52,7 @@ public class MaskedLine implements LineStyle {
 	}
 
 	public final void init() {
-		double powDash = Math.pow(2, (dash <= 1) ? dash : dash * width);
+		double powDash = Math.pow(2, dash * width);
 		double powInterDash = Math.pow(2, interDash * width);
 		double bitsPow = powDash * powInterDash;
 
